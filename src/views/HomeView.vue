@@ -46,9 +46,17 @@ const groupedTools = computed(() => {
         :key="group.categoryId"
         class="home__section"
       >
-        <h2 class="home__section-title">
-          {{ searchKeyword.trim() ? `搜索结果 (${filteredTools.length})` : group.categoryName }}
-        </h2>
+        <div class="home__section-head">
+          <h2 class="home__section-title">
+            {{ searchKeyword.trim() ? '搜索结果' : group.categoryName }}
+          </h2>
+          <span v-if="searchKeyword.trim()" class="home__section-badge">
+            {{ filteredTools.length }}
+          </span>
+          <span v-else class="home__section-badge home__section-badge--muted">
+            {{ group.tools.length }}
+          </span>
+        </div>
         <div class="home__tools-grid">
           <ToolCard v-for="tool in group.tools" :key="tool.id" :tool="tool"/>
         </div>
@@ -57,20 +65,25 @@ const groupedTools = computed(() => {
 
     <section v-else class="home__section">
       <Card class="home__empty">
-        <svg
-          class="home__empty-icon"
-          fill="none"
-          stroke="currentColor"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          viewBox="0 0 24 24"
-        >
-          <path
-            d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
-          />
-        </svg>
+        <div class="home__empty-icon-wrap">
+          <svg
+            class="home__empty-icon"
+            fill="none"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+            />
+          </svg>
+        </div>
         <h3 class="home__empty-title">{{ searchKeyword.trim() ? '未找到相关工具' : '暂无工具' }}</h3>
+        <p class="home__empty-desc">
+          {{ searchKeyword.trim() ? '试试其他关键词' : '敬请期待更多工具上线' }}
+        </p>
       </Card>
     </section>
   </div>
@@ -80,20 +93,52 @@ const groupedTools = computed(() => {
 .home {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 28px;
 }
 
 .home__section {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
+}
+
+.home__section-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 2px;
 }
 
 .home__section-title {
   font-size: 20px;
   font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
   color: var(--text-primary);
   margin: 0;
+}
+
+.home__section-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  color: var(--color-primary);
+  background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 16%, transparent);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.home__section-badge--muted {
+  color: var(--text-secondary);
+  background: color-mix(in srgb, var(--bg-secondary) 55%, transparent);
+  border-color: var(--surface-border-strong);
 }
 
 .home__tools-grid {
@@ -107,17 +152,37 @@ const groupedTools = computed(() => {
   text-align: center;
 }
 
-.home__empty-icon {
-  width: 56px;
-  height: 56px;
-  color: var(--text-muted);
+.home__empty-icon-wrap {
+  width: 68px;
+  height: 68px;
   margin: 0 auto 16px;
+  border-radius: var(--radius-xl);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--color-primary) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 14%, var(--surface-border));
+  box-shadow: var(--shadow-md), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.home__empty-icon {
+  width: 28px;
+  height: 28px;
+  color: var(--color-primary);
 }
 
 .home__empty-title {
-  font-size: 18px;
-  font-weight: 600;
+  font-size: 17px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
   color: var(--text-primary);
-  margin: 0 0 8px;
+  margin: 0 0 6px;
+}
+
+.home__empty-desc {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.5;
 }
 </style>

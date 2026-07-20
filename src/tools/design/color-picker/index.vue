@@ -22,70 +22,112 @@ interface RGB {
   b: number
 }
 
+type DragTarget = 'saturation' | 'hue' | 'alpha' | null
+
 const hue = ref(0)
 const saturation = ref(100)
 const value = ref(100)
 const alpha = ref(100)
 
-const isDraggingSaturation = ref(false)
-const isDraggingHue = ref(false)
-const isDraggingAlpha = ref(false)
+const activeDrag = ref<DragTarget>(null)
 
 const saturationRef = ref<HTMLDivElement | null>(null)
 const hueRef = ref<HTMLDivElement | null>(null)
 const alphaRef = ref<HTMLDivElement | null>(null)
 
 const eyedropperSupported = ref(false)
+const hexFocused = ref(false)
+const hexDraft = ref('#ff0000')
 
-onMounted(() => {
-  eyedropperSupported.value = 'EyeDropper' in window
-})
+const hsv = computed<HSV>(() => ({
+  h: Math.round(hue.value),
+  s: Math.round(saturation.value),
+  v: Math.round(value.value),
+}))
 
-const hsv = computed<HSV>({
-  get: () => ({
-    h: Math.round(hue.value),
-    s: Math.round(saturation.value),
-    v: Math.round(value.value),
-  }),
-  set: (val) => {
-    hue.value = val.h
-    saturation.value = val.s
-    value.value = val.v
-  },
-})
-
-const rgb = computed<RGB>({
-  get: () => hsvToRgb(hsv.value),
-  set: (val) => {
-    hsv.value = rgbToHsv(val)
-  },
-})
-
-const hsl = computed<HSL>({
-  get: () => hsvToHsl(hsv.value),
-  set: (val) => {
-    hsv.value = hslToHsv(val)
-  },
-})
-
-const hex = computed<string>({
-  get: () => rgbToHex(rgb.value),
-  set: (val) => {
-    const parsed = hexToRgb(val)
-    if (parsed) {
-      rgb.value = parsed
-    }
-  },
-})
+const rgb = computed<RGB>(() => hsvToRgb(hsv.value))
+const hsl = computed<HSL>(() => hsvToHsl(hsv.value))
+const hex = computed(() => rgbToHex(rgb.value))
 
 const previewColor = computed(() => {
   const {r, g, b} = rgb.value
-  const a = alpha.value / 100
-  return `rgba(${r}, ${g}, ${b}, ${a})`
+  return `rgba(${r}, ${g}, ${b}, ${alpha.value / 100})`
 })
 
-function hsvToRgb(hsv: HSV): RGB {
-  const {h, s, v} = hsv
+watch(
+  hex,
+  (next) => {
+    if (!hexFocused.value) {
+      hexDraft.value = next
+    }
+  },
+  {immediate: true},
+)
+
+function applyHsv(next: HSV) {
+  hue.value = clamp(next.h, 0, 360)
+  saturation.value = clamp(next.s, 0, 100)
+  value.value = clamp(next.v, 0, 100)
+}
+
+function updateRgbChannel(channel: keyof RGB, raw: number | string) {
+  const n = typeof raw === 'number' ? raw : Number(raw)
+  if (!Number.isFinite(n)) return
+  const next: RGB = {
+    ...rgb.value,
+    [channel]: clamp(Math.round(n), 0, 255),
+  }
+  applyHsv(rgbToHsv(next))
+}
+
+function updateHslChannel(channel: keyof HSL, raw: number | string) {
+  const n = typeof raw === 'number' ? raw : Number(raw)
+  if (!Number.isFinite(n)) return
+  const max = channel === 'h' ? 360 : 100
+  const next: HSL = {
+    ...hsl.value,
+    [channel]: clamp(Math.round(n), 0, max),
+  }
+  applyHsv(hslToHsv(next))
+}
+
+function updateHsvChannel(channel: keyof HSV, raw: number | string) {
+  const n = typeof raw === 'number' ? raw : Number(raw)
+  if (!Number.isFinite(n)) return
+  const max = channel === 'h' ? 360 : 100
+  applyHsv({
+    ...hsv.value,
+    [channel]: clamp(Math.round(n), 0, max),
+  })
+}
+
+function updateAlpha(raw: number | string) {
+  const n = typeof raw === 'number' ? raw : Number(raw)
+  if (!Number.isFinite(n)) return
+  alpha.value = clamp(Math.round(n), 0, 100)
+}
+
+function onHexInput(raw: string) {
+  hexDraft.value = raw
+  const parsed = hexToRgb(raw.trim())
+  if (parsed) {
+    applyHsv(rgbToHsv(parsed))
+  }
+}
+
+function onHexBlur() {
+  hexFocused.value = false
+  const parsed = hexToRgb(hexDraft.value.trim())
+  if (parsed) {
+    applyHsv(rgbToHsv(parsed))
+    hexDraft.value = rgbToHex(parsed)
+  } else {
+    hexDraft.value = hex.value
+  }
+}
+
+function hsvToRgb(hsvVal: HSV): RGB {
+  const {h, s, v} = hsvVal
   const sNorm = s / 100
   const vNorm = v / 100
 
@@ -93,7 +135,9 @@ function hsvToRgb(hsv: HSV): RGB {
   const x = c * (1 - Math.abs(((h / 60) % 2) - 1))
   const m = vNorm - c
 
-  let r: number, g: number, b: number
+  let r: number
+  let g: number
+  let b: number
 
   if (h < 60) {
     r = c
@@ -128,11 +172,10 @@ function hsvToRgb(hsv: HSV): RGB {
   }
 }
 
-function rgbToHsv(rgb: RGB): HSV {
-  const {r, g, b} = rgb
-  const rNorm = r / 255
-  const gNorm = g / 255
-  const bNorm = b / 255
+function rgbToHsv(rgbVal: RGB): HSV {
+  const rNorm = rgbVal.r / 255
+  const gNorm = rgbVal.g / 255
+  const bNorm = rgbVal.b / 255
 
   const max = Math.max(rNorm, gNorm, bNorm)
   const min = Math.min(rNorm, gNorm, bNorm)
@@ -157,45 +200,44 @@ function rgbToHsv(rgb: RGB): HSV {
   return {h: Math.round(h), s: Math.round(s), v: Math.round(v)}
 }
 
-function hsvToHsl(hsv: HSV): HSL {
-  const {h, s, v} = hsv
-  const sNorm = s / 100
-  const vNorm = v / 100
+function hsvToHsl(hsvVal: HSV): HSL {
+  const sNorm = hsvVal.s / 100
+  const vNorm = hsvVal.v / 100
 
   const l = (2 - sNorm) * vNorm
   const lNorm = l / 2
-
-  const sHsl = vNorm === 0 ? 0 : (sNorm * vNorm) / (lNorm <= 0.5 ? l : 2 - lNorm)
+  const sHsl = vNorm === 0
+    ? 0
+    : (sNorm * vNorm) / (lNorm <= 0.5 ? l : 2 - lNorm)
 
   return {
-    h: Math.round(h),
+    h: Math.round(hsvVal.h),
     s: Math.round(sHsl * 100),
     l: Math.round(lNorm * 100),
   }
 }
 
-function hslToHsv(hsl: HSL): HSV {
-  const {h, s, l} = hsl
-  const sNorm = s / 100
-  const lNorm = l / 100
+function hslToHsv(hslVal: HSL): HSV {
+  const sNorm = hslVal.s / 100
+  const lNorm = hslVal.l / 100
 
   const v = lNorm + sNorm * Math.min(lNorm, 1 - lNorm)
   const sHsv = v === 0 ? 0 : (2 - (2 * lNorm) / v)
 
   return {
-    h: Math.round(h),
+    h: Math.round(hslVal.h),
     s: Math.round(sHsv * 100),
     v: Math.round(v * 100),
   }
 }
 
-function rgbToHex(rgb: RGB): string {
+function rgbToHex(rgbVal: RGB): string {
   const toHex = (n: number) => n.toString(16).padStart(2, '0')
-  return `#${toHex(rgb.r)}${toHex(rgb.g)}${toHex(rgb.b)}`
+  return `#${toHex(rgbVal.r)}${toHex(rgbVal.g)}${toHex(rgbVal.b)}`
 }
 
-function hexToRgb(hex: string): RGB | null {
-  const match = hex.match(/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i)
+function hexToRgb(hexVal: string): RGB | null {
+  const match = hexVal.match(/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i)
   if (!match) return null
   return {
     r: parseInt(match[1], 16),
@@ -208,63 +250,50 @@ function clamp(val: number, min: number, max: number) {
   return Math.min(Math.max(val, min), max)
 }
 
-function handleSaturationMouseDown(e: MouseEvent) {
-  isDraggingSaturation.value = true
-  updateSaturationFromMouse(e)
+function beginDrag(target: Exclude<DragTarget, null>, e: PointerEvent) {
+  const el = e.currentTarget as HTMLElement
+  el.setPointerCapture(e.pointerId)
+  activeDrag.value = target
+  updateFromPointer(target, e)
 }
 
-function handleSaturationMouseMove(e: MouseEvent) {
-  if (!isDraggingSaturation.value) return
-  updateSaturationFromMouse(e)
+function onPointerMove(e: PointerEvent) {
+  if (!activeDrag.value) return
+  updateFromPointer(activeDrag.value, e)
 }
 
-function updateSaturationFromMouse(e: MouseEvent) {
-  if (!saturationRef.value) return
-  const rect = saturationRef.value.getBoundingClientRect()
-  const x = clamp((e.clientX - rect.left) / rect.width, 0, 1)
-  const y = clamp((e.clientY - rect.top) / rect.height, 0, 1)
-  saturation.value = Math.round(x * 100)
-  value.value = Math.round((1 - y) * 100)
+function endDrag(e: PointerEvent) {
+  if (!activeDrag.value) return
+  const el = e.currentTarget as HTMLElement
+  if (el.hasPointerCapture?.(e.pointerId)) {
+    el.releasePointerCapture(e.pointerId)
+  }
+  activeDrag.value = null
 }
 
-function handleHueMouseDown(e: MouseEvent) {
-  isDraggingHue.value = true
-  updateHueFromMouse(e)
-}
+function updateFromPointer(target: Exclude<DragTarget, null>, e: PointerEvent) {
+  if (target === 'saturation') {
+    if (!saturationRef.value) return
+    const rect = saturationRef.value.getBoundingClientRect()
+    const x = clamp((e.clientX - rect.left) / rect.width, 0, 1)
+    const y = clamp((e.clientY - rect.top) / rect.height, 0, 1)
+    saturation.value = Math.round(x * 100)
+    value.value = Math.round((1 - y) * 100)
+    return
+  }
 
-function handleHueMouseMove(e: MouseEvent) {
-  if (!isDraggingHue.value) return
-  updateHueFromMouse(e)
-}
+  if (target === 'hue') {
+    if (!hueRef.value) return
+    const rect = hueRef.value.getBoundingClientRect()
+    const x = clamp((e.clientX - rect.left) / rect.width, 0, 1)
+    hue.value = Math.round(x * 360)
+    return
+  }
 
-function updateHueFromMouse(e: MouseEvent) {
-  if (!hueRef.value) return
-  const rect = hueRef.value.getBoundingClientRect()
-  const x = clamp((e.clientX - rect.left) / rect.width, 0, 1)
-  hue.value = Math.round(x * 360)
-}
-
-function handleAlphaMouseDown(e: MouseEvent) {
-  isDraggingAlpha.value = true
-  updateAlphaFromMouse(e)
-}
-
-function handleAlphaMouseMove(e: MouseEvent) {
-  if (!isDraggingAlpha.value) return
-  updateAlphaFromMouse(e)
-}
-
-function updateAlphaFromMouse(e: MouseEvent) {
   if (!alphaRef.value) return
   const rect = alphaRef.value.getBoundingClientRect()
   const x = clamp((e.clientX - rect.left) / rect.width, 0, 1)
   alpha.value = Math.round(x * 100)
-}
-
-function handleMouseUp() {
-  isDraggingSaturation.value = false
-  isDraggingHue.value = false
-  isDraggingAlpha.value = false
 }
 
 async function pickColor() {
@@ -273,8 +302,12 @@ async function pickColor() {
   try {
     const eyeDropper = new (window as any).EyeDropper()
     const result = await eyeDropper.open()
-    hex.value = result.sRGBHex
-    alpha.value = 100
+    const parsed = hexToRgb(result.sRGBHex)
+    if (parsed) {
+      applyHsv(rgbToHsv(parsed))
+      alpha.value = 100
+      hexDraft.value = rgbToHex(parsed)
+    }
   } catch {
   }
 }
@@ -284,20 +317,8 @@ function copyToClipboard(text: string) {
   toast.success('复制成功')
 }
 
-watch(
-  () => [rgb.value, hsl.value],
-  () => {
-  },
-  {deep: true}
-)
-
 onMounted(() => {
-  document.addEventListener('mousemove', (e) => {
-    handleSaturationMouseMove(e)
-    handleHueMouseMove(e)
-    handleAlphaMouseMove(e)
-  })
-  document.addEventListener('mouseup', handleMouseUp)
+  eyedropperSupported.value = 'EyeDropper' in window
 })
 </script>
 
@@ -307,11 +328,12 @@ onMounted(() => {
       <div class="color-picker__picker">
         <div
           ref="saturationRef"
-          :style="{
-            background: `hsl(${hue}, 100%, 50%)`,
-          }"
+          :style="{ background: `hsl(${hue}, 100%, 50%)` }"
           class="color-picker__saturation"
-          @mousedown="handleSaturationMouseDown"
+          @pointercancel="endDrag"
+          @pointermove="onPointerMove"
+          @pointerup="endDrag"
+          @pointerdown.prevent="beginDrag('saturation', $event)"
         >
           <div class="color-picker__saturation-white"></div>
           <div class="color-picker__saturation-black"></div>
@@ -326,23 +348,31 @@ onMounted(() => {
         </div>
 
         <div class="color-picker__sliders">
-          <div ref="hueRef" class="color-picker__hue" @mousedown="handleHueMouseDown">
+          <div
+            ref="hueRef"
+            class="color-picker__hue"
+            @pointercancel="endDrag"
+            @pointermove="onPointerMove"
+            @pointerup="endDrag"
+            @pointerdown.prevent="beginDrag('hue', $event)"
+          >
             <div
-              :style="{left: `${(hue / 360) * 100}%`}"
+              :style="{ left: `${(hue / 360) * 100}%` }"
               class="color-picker__hue-pointer"
             ></div>
           </div>
 
           <div
             ref="alphaRef"
-            :style="{
-              background: `linear-gradient(to right, transparent, ${hex})`,
-            }"
+            :style="{ background: `linear-gradient(to right, transparent, ${hex})` }"
             class="color-picker__alpha"
-            @mousedown="handleAlphaMouseDown"
+            @pointercancel="endDrag"
+            @pointermove="onPointerMove"
+            @pointerup="endDrag"
+            @pointerdown.prevent="beginDrag('alpha', $event)"
           >
             <div
-              :style="{left: `${alpha}%`}"
+              :style="{ left: `${alpha}%` }"
               class="color-picker__alpha-pointer"
             ></div>
           </div>
@@ -350,7 +380,10 @@ onMounted(() => {
       </div>
 
       <div class="color-picker__preview">
-        <div :style="{backgroundColor: previewColor}" class="color-picker__preview-color"></div>
+        <div
+          :style="{ backgroundColor: previewColor }"
+          class="color-picker__preview-color"
+        ></div>
         <div class="color-picker__preview-info">
           <div class="color-picker__preview-hex">{{ hex }}</div>
           <div class="color-picker__preview-alpha">Alpha: {{ alpha }}%</div>
@@ -365,34 +398,34 @@ onMounted(() => {
           <div class="color-picker__input-item">
             <span class="color-picker__input-label">R</span>
             <input
-              v-model.number="rgb.r"
+              :value="rgb.r"
               class="color-picker__input"
               max="255"
               min="0"
               type="number"
-              @input="rgb.r = clamp(rgb.r, 0, 255)"
+              @input="updateRgbChannel('r', ($event.target as HTMLInputElement).value)"
             />
           </div>
           <div class="color-picker__input-item">
             <span class="color-picker__input-label">G</span>
             <input
-              v-model.number="rgb.g"
+              :value="rgb.g"
               class="color-picker__input"
               max="255"
               min="0"
               type="number"
-              @input="rgb.g = clamp(rgb.g, 0, 255)"
+              @input="updateRgbChannel('g', ($event.target as HTMLInputElement).value)"
             />
           </div>
           <div class="color-picker__input-item">
             <span class="color-picker__input-label">B</span>
             <input
-              v-model.number="rgb.b"
+              :value="rgb.b"
               class="color-picker__input"
               max="255"
               min="0"
               type="number"
-              @input="rgb.b = clamp(rgb.b, 0, 255)"
+              @input="updateRgbChannel('b', ($event.target as HTMLInputElement).value)"
             />
           </div>
         </div>
@@ -404,34 +437,34 @@ onMounted(() => {
           <div class="color-picker__input-item">
             <span class="color-picker__input-label">H</span>
             <input
-              v-model.number="hsl.h"
+              :value="hsl.h"
               class="color-picker__input"
               max="360"
               min="0"
               type="number"
-              @input="hsl.h = clamp(hsl.h, 0, 360)"
+              @input="updateHslChannel('h', ($event.target as HTMLInputElement).value)"
             />
           </div>
           <div class="color-picker__input-item">
             <span class="color-picker__input-label">S</span>
             <input
-              v-model.number="hsl.s"
+              :value="hsl.s"
               class="color-picker__input"
               max="100"
               min="0"
               type="number"
-              @input="hsl.s = clamp(hsl.s, 0, 100)"
+              @input="updateHslChannel('s', ($event.target as HTMLInputElement).value)"
             />
           </div>
           <div class="color-picker__input-item">
             <span class="color-picker__input-label">L</span>
             <input
-              v-model.number="hsl.l"
+              :value="hsl.l"
               class="color-picker__input"
               max="100"
               min="0"
               type="number"
-              @input="hsl.l = clamp(hsl.l, 0, 100)"
+              @input="updateHslChannel('l', ($event.target as HTMLInputElement).value)"
             />
           </div>
         </div>
@@ -443,34 +476,34 @@ onMounted(() => {
           <div class="color-picker__input-item">
             <span class="color-picker__input-label">H</span>
             <input
-              v-model.number="hsv.h"
+              :value="hsv.h"
               class="color-picker__input"
               max="360"
               min="0"
               type="number"
-              @input="hsv.h = clamp(hsv.h, 0, 360)"
+              @input="updateHsvChannel('h', ($event.target as HTMLInputElement).value)"
             />
           </div>
           <div class="color-picker__input-item">
             <span class="color-picker__input-label">S</span>
             <input
-              v-model.number="hsv.s"
+              :value="hsv.s"
               class="color-picker__input"
               max="100"
               min="0"
               type="number"
-              @input="hsv.s = clamp(hsv.s, 0, 100)"
+              @input="updateHsvChannel('s', ($event.target as HTMLInputElement).value)"
             />
           </div>
           <div class="color-picker__input-item">
             <span class="color-picker__input-label">V</span>
             <input
-              v-model.number="hsv.v"
+              :value="hsv.v"
               class="color-picker__input"
               max="100"
               min="0"
               type="number"
-              @input="hsv.v = clamp(hsv.v, 0, 100)"
+              @input="updateHsvChannel('v', ($event.target as HTMLInputElement).value)"
             />
           </div>
         </div>
@@ -480,9 +513,13 @@ onMounted(() => {
         <label>HEX</label>
         <div class="color-picker__input-row">
           <input
-            v-model="hex"
+            v-model="hexDraft"
             class="color-picker__input color-picker__input--hex"
+            spellcheck="false"
             type="text"
+            @blur="onHexBlur"
+            @focus="hexFocused = true"
+            @input="onHexInput(hexDraft)"
           />
         </div>
       </div>
@@ -491,12 +528,12 @@ onMounted(() => {
         <label>Alpha</label>
         <div class="color-picker__input-row">
           <input
-            v-model.number="alpha"
+            :value="alpha"
             class="color-picker__input"
             max="100"
             min="0"
             type="number"
-            @input="alpha = clamp(alpha, 0, 100)"
+            @input="updateAlpha(($event.target as HTMLInputElement).value)"
           />
         </div>
       </div>
@@ -505,18 +542,29 @@ onMounted(() => {
     <div class="color-picker__actions">
       <button
         v-if="eyedropperSupported"
-        class="color-picker__eyedropper"
+        class="color-picker__eyedropper pressable"
+        type="button"
         @click="pickColor"
       >
         屏幕取色
       </button>
 
       <div class="color-picker__copy-group">
-        <button class="color-picker__copy" @click="copyToClipboard(hex)">复制 HEX</button>
-        <button class="color-picker__copy" @click="copyToClipboard(`rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`)">
+        <button class="color-picker__copy pressable" type="button" @click="copyToClipboard(hex)">
+          复制 HEX
+        </button>
+        <button
+          class="color-picker__copy pressable"
+          type="button"
+          @click="copyToClipboard(`rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`)"
+        >
           复制 RGB
         </button>
-        <button class="color-picker__copy" @click="copyToClipboard(`hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`)">
+        <button
+          class="color-picker__copy pressable"
+          type="button"
+          @click="copyToClipboard(`hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`)"
+        >
           复制 HSL
         </button>
       </div>
@@ -528,30 +576,42 @@ onMounted(() => {
 .color-picker {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 16px;
 }
 
 .color-picker__main {
   display: flex;
   gap: 24px;
   padding: 20px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
+  border: 1px solid var(--surface-border-strong);
+  border-radius: var(--radius-xl);
+  background: color-mix(in srgb, var(--bg-secondary) 40%, transparent);
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  box-shadow: var(--shadow-sm), inset 0 1px 0 rgba(255, 255, 255, 0.32);
+}
+
+[data-theme="dark"] .color-picker__main {
+  box-shadow: var(--shadow-sm), inset 0 0.5px 0 rgba(255, 255, 255, 0.05);
 }
 
 .color-picker__picker {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
 }
 
 .color-picker__saturation {
   width: 280px;
   height: 200px;
   position: relative;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   cursor: crosshair;
   overflow: hidden;
+  touch-action: none;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--surface-border-strong);
+  user-select: none;
 }
 
 .color-picker__saturation-white {
@@ -568,11 +628,11 @@ onMounted(() => {
 
 .color-picker__saturation-pointer {
   position: absolute;
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
-  border: 2px solid #fff;
-  box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+  border: 2.5px solid #fff;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.18), 0 4px 12px rgba(0, 0, 0, 0.32);
   transform: translate(-50%, -50%);
   pointer-events: none;
 }
@@ -580,13 +640,22 @@ onMounted(() => {
 .color-picker__sliders {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
+}
+
+.color-picker__hue,
+.color-picker__alpha {
+  width: 280px;
+  height: 14px;
+  border-radius: var(--radius-full);
+  position: relative;
+  cursor: pointer;
+  touch-action: none;
+  user-select: none;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
 }
 
 .color-picker__hue {
-  width: 280px;
-  height: 16px;
-  border-radius: var(--radius-sm);
   background: linear-gradient(
     to right,
     #ff0000,
@@ -597,44 +666,27 @@ onMounted(() => {
     #ff00ff,
     #ff0000
   );
-  position: relative;
-  cursor: crosshair;
-}
-
-.color-picker__hue-pointer {
-  position: absolute;
-  top: 50%;
-  width: 8px;
-  height: 20px;
-  background: #fff;
-  border-radius: 2px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
-  transform: translate(-50%, -50%);
-  pointer-events: none;
 }
 
 .color-picker__alpha {
-  width: 280px;
-  height: 16px;
-  border-radius: var(--radius-sm);
-  position: relative;
-  cursor: crosshair;
   background-image: linear-gradient(45deg, #ccc 25%, transparent 25%),
   linear-gradient(-45deg, #ccc 25%, transparent 25%),
   linear-gradient(45deg, transparent 75%, #ccc 75%),
   linear-gradient(-45deg, transparent 75%, #ccc 75%);
   background-size: 8px 8px;
   background-position: 0 0, 0 4px, 4px -4px, -4px 0;
+  overflow: hidden;
 }
 
+.color-picker__hue-pointer,
 .color-picker__alpha-pointer {
   position: absolute;
   top: 50%;
-  width: 8px;
-  height: 20px;
+  width: 12px;
+  height: 24px;
   background: #fff;
-  border-radius: 2px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+  border-radius: var(--radius-full);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.28), 0 0 0 1px rgba(0, 0, 0, 0.06);
   transform: translate(-50%, -50%);
   pointer-events: none;
 }
@@ -643,17 +695,17 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
   padding-left: 24px;
-  border-left: 1px solid var(--border);
+  border-left: 1px solid var(--surface-border-strong);
 }
 
 .color-picker__preview-color {
-  width: 120px;
-  height: 120px;
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-md);
+  width: 112px;
+  height: 112px;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--surface-border-strong);
+  box-shadow: var(--shadow-lg), inset 0 1px 0 rgba(255, 255, 255, 0.25);
 }
 
 .color-picker__preview-info {
@@ -662,24 +714,34 @@ onMounted(() => {
 
 .color-picker__preview-hex {
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 650;
+  letter-spacing: -0.02em;
   color: var(--text-primary);
-  font-family: monospace;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
 
 .color-picker__preview-alpha {
   font-size: 12px;
   color: var(--text-secondary);
   margin-top: 4px;
+  letter-spacing: -0.01em;
 }
 
 .color-picker__inputs {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 16px;
-  padding: 20px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid var(--surface-border-strong);
+  border-radius: var(--radius-xl);
+  background: color-mix(in srgb, var(--bg-secondary) 40%, transparent);
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  box-shadow: var(--shadow-sm), inset 0 1px 0 rgba(255, 255, 255, 0.32);
+}
+
+[data-theme="dark"] .color-picker__inputs {
+  box-shadow: var(--shadow-sm), inset 0 0.5px 0 rgba(255, 255, 255, 0.05);
 }
 
 .color-picker__input-group {
@@ -687,36 +749,42 @@ onMounted(() => {
   flex-direction: column;
   gap: 8px;
   padding: 12px;
-  border: 1px solid var(--border);
+  border: 1px solid var(--surface-border-strong);
   border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--bg-secondary) 55%, transparent);
   min-width: 0;
-  overflow: hidden;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22);
+}
+
+[data-theme="dark"] .color-picker__input-group {
+  box-shadow: inset 0 0.5px 0 rgba(255, 255, 255, 0.04);
 }
 
 .color-picker__input-group label {
-  font-size: 12px;
-  font-weight: 600;
+  font-size: 11px;
+  font-weight: 650;
   color: var(--text-secondary);
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0.07em;
 }
 
 .color-picker__input-row {
   display: flex;
-  gap: 8px;
+  gap: 6px;
+  min-width: 0;
 }
 
 .color-picker__input-item {
   display: flex;
   align-items: center;
   gap: 4px;
-  flex: 1;
+  flex: 1 1 0;
   min-width: 0;
 }
 
 .color-picker__input-label {
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 650;
   color: var(--text-muted);
   width: 12px;
   flex-shrink: 0;
@@ -724,29 +792,37 @@ onMounted(() => {
 
 .color-picker__input {
   width: 100%;
-  min-width: 0;
+  min-width: 3.25ch;
   height: 36px;
-  padding: 0 10px;
-  border: 1px solid var(--border);
+  padding: 0 6px;
+  border: 1px solid var(--surface-border-strong);
   border-radius: var(--radius-sm);
-  background: var(--bg-secondary);
+  background: color-mix(in srgb, var(--bg-secondary) 70%, transparent);
   color: var(--text-primary);
-  font-size: 14px;
-  font-family: monospace;
+  font-size: 13px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   text-align: center;
   outline: none;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: border-color var(--duration-fast) var(--ease-out-soft),
+  box-shadow var(--duration-fast) var(--ease-out-soft),
+  background-color var(--duration-fast) var(--ease-out-soft);
   box-sizing: border-box;
+  line-height: 36px;
+  overflow: visible;
 }
 
 .color-picker__input:focus {
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+  border-color: color-mix(in srgb, var(--color-primary) 48%, transparent);
+  box-shadow: var(--ring);
+  background: var(--bg-secondary);
 }
 
 .color-picker__input--hex {
   text-align: left;
-  padding-left: 12px;
+  padding: 0 12px;
+  min-width: 0;
+  flex: 1;
+  line-height: normal;
 }
 
 .color-picker__input::-webkit-inner-spin-button,
@@ -757,15 +833,24 @@ onMounted(() => {
 
 .color-picker__input[type="number"] {
   appearance: textfield;
+  -moz-appearance: textfield;
 }
 
 .color-picker__actions {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  padding: 20px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
+  padding: 16px;
+  border: 1px solid var(--surface-border-strong);
+  border-radius: var(--radius-xl);
+  background: color-mix(in srgb, var(--bg-secondary) 40%, transparent);
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  box-shadow: var(--shadow-sm), inset 0 1px 0 rgba(255, 255, 255, 0.32);
+}
+
+[data-theme="dark"] .color-picker__actions {
+  box-shadow: var(--shadow-sm), inset 0 0.5px 0 rgba(255, 255, 255, 0.05);
 }
 
 .color-picker__eyedropper {
@@ -773,19 +858,21 @@ onMounted(() => {
   background: var(--color-primary);
   color: #fff;
   border: none;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-full);
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 550;
+  letter-spacing: -0.01em;
   cursor: pointer;
-  transition: background-color 0.2s ease, transform 0.1s ease;
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--color-primary) 30%, transparent),
+  inset 0 1px 0 rgba(255, 255, 255, 0.28);
+  transition: box-shadow var(--duration-fast) var(--ease-out-soft),
+  background-color var(--duration-fast) var(--ease-out-soft);
 }
 
 .color-picker__eyedropper:hover {
-  background: #2563eb;
-}
-
-.color-picker__eyedropper:active {
-  transform: scale(0.98);
+  background: var(--color-primary-hover);
+  box-shadow: 0 12px 28px color-mix(in srgb, var(--color-primary) 36%, transparent),
+  inset 0 1px 0 rgba(255, 255, 255, 0.32);
 }
 
 .color-picker__copy-group {
@@ -798,19 +885,28 @@ onMounted(() => {
   flex: 1;
   min-width: 100px;
   padding: 10px 16px;
-  background: var(--bg-secondary);
+  background: color-mix(in srgb, var(--bg-secondary) 70%, transparent);
   color: var(--text-primary);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
+  border: 1px solid var(--surface-border-strong);
+  border-radius: var(--radius-full);
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 550;
+  letter-spacing: -0.01em;
   cursor: pointer;
-  transition: background-color 0.2s ease, border-color 0.2s ease;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  transition: background-color var(--duration-fast) var(--ease-out-soft),
+  border-color var(--duration-fast) var(--ease-out-soft),
+  box-shadow var(--duration-fast) var(--ease-out-soft);
+}
+
+[data-theme="dark"] .color-picker__copy {
+  box-shadow: inset 0 0.5px 0 rgba(255, 255, 255, 0.04);
 }
 
 .color-picker__copy:hover {
-  background: var(--bg-tertiary);
-  border-color: var(--color-primary);
+  background: color-mix(in srgb, var(--color-primary) 10%, var(--bg-secondary));
+  border-color: color-mix(in srgb, var(--color-primary) 32%, transparent);
+  box-shadow: var(--shadow-glow);
 }
 
 @media (max-width: 768px) {
@@ -831,11 +927,15 @@ onMounted(() => {
   .color-picker__preview {
     flex-direction: row;
     justify-content: flex-start;
+    padding-left: 0;
+    border-left: none;
+    border-top: 1px solid var(--surface-border-strong);
+    padding-top: 16px;
   }
 
   .color-picker__preview-color {
-    width: 80px;
-    height: 80px;
+    width: 72px;
+    height: 72px;
   }
 }
 </style>

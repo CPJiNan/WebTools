@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import {useThemeStore} from '@/stores/theme'
-import {computed} from 'vue'
+import {computed, Transition} from 'vue'
 
 const theme = useThemeStore()
 
@@ -17,22 +17,27 @@ const title = computed(() => {
 
 <template>
   <button
+    :aria-label="title"
     :title="title"
     class="theme-toggle"
+    type="button"
     @click="theme.toggle"
   >
-    <svg
-      class="theme-toggle__icon"
-      fill="none"
-      stroke="currentColor"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      stroke-width="2"
-      viewBox="0 0 24 24"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path :d="iconPath"/>
-    </svg>
+    <Transition mode="out-in" name="theme-icon">
+      <svg
+        :key="theme.mode"
+        class="theme-toggle__icon"
+        fill="none"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path :d="iconPath"/>
+      </svg>
+    </Transition>
   </button>
 </template>
 
@@ -40,27 +45,46 @@ const title = computed(() => {
 .theme-toggle {
   width: 40px;
   height: 40px;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-full);
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--text-secondary);
-  transition: background-color 0.2s ease,
-  color 0.2s ease;
+  background: color-mix(in srgb, var(--bg-secondary) 52%, transparent);
+  border: 1px solid var(--surface-border-strong);
+  box-shadow: var(--shadow-sm), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: background-color var(--duration-fast) var(--ease-out-soft),
+  color var(--duration-fast) var(--ease-out-soft),
+  border-color var(--duration-fast) var(--ease-out-soft),
+  box-shadow var(--duration-fast) var(--ease-out-soft);
+}
+
+[data-theme="dark"] .theme-toggle {
+  box-shadow: var(--shadow-sm), inset 0 0.5px 0 rgba(255, 255, 255, 0.05);
 }
 
 .theme-toggle:hover {
-  background: var(--bg-tertiary);
-  color: var(--text-primary);
+  background: color-mix(in srgb, var(--color-primary) 10%, var(--bg-secondary));
+  color: var(--color-primary);
+  border-color: color-mix(in srgb, var(--color-primary) 28%, transparent);
+  box-shadow: var(--shadow-glow);
 }
 
 .theme-toggle__icon {
-  width: 20px;
-  height: 20px;
-  transition: transform 0.3s ease;
+  width: 18px;
+  height: 18px;
+  display: block;
 }
 
-.theme-toggle:hover .theme-toggle__icon {
-  transform: rotate(15deg);
+.theme-icon-enter-active,
+.theme-icon-leave-active {
+  transition: opacity var(--duration-fast) var(--ease-out-soft);
+}
+
+.theme-icon-enter-from,
+.theme-icon-leave-to {
+  opacity: 0;
 }
 </style>

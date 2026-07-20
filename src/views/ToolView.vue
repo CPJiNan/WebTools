@@ -32,7 +32,7 @@ watch(
 
 <template>
   <div class="tool-view">
-    <nav class="tool-view__breadcrumb">
+    <nav class="tool-view__breadcrumb glass">
       <RouterLink class="tool-view__breadcrumb-link" to="/">首页</RouterLink>
       <span class="tool-view__breadcrumb-sep">/</span>
       <RouterLink
@@ -47,7 +47,7 @@ watch(
     </nav>
 
     <template v-if="tool">
-      <div class="tool-view__header">
+      <div class="tool-view__header glass">
         <div class="tool-view__header-left">
           <div class="tool-view__icon">
             <svg
@@ -56,7 +56,7 @@ watch(
               stroke="currentColor"
               stroke-linecap="round"
               stroke-linejoin="round"
-              stroke-width="2"
+              stroke-width="1.75"
               viewBox="0 0 24 24"
             >
               <path d="M0 0h24v24H0z" fill="none" stroke="none"/>
@@ -69,7 +69,7 @@ watch(
               stroke="currentColor"
               stroke-linecap="round"
               stroke-linejoin="round"
-              stroke-width="2"
+              stroke-width="1.75"
               viewBox="0 0 24 24"
             >
               <path
@@ -94,23 +94,25 @@ watch(
     </template>
 
     <Card v-else class="tool-view__not-found">
-      <svg
-        class="tool-view__not-found-icon"
-        fill="none"
-        stroke="currentColor"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        stroke-width="2"
-        viewBox="0 0 24 24"
-      >
-        <circle cx="12" cy="12" r="10"/>
-        <path d="M12 8v4m0 4h.01"/>
-      </svg>
+      <div class="tool-view__not-found-icon-wrap">
+        <svg
+          class="tool-view__not-found-icon"
+          fill="none"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="1.75"
+          viewBox="0 0 24 24"
+        >
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 8v4m0 4h.01"/>
+        </svg>
+      </div>
       <h2 class="tool-view__not-found-title">工具不存在</h2>
       <p class="tool-view__not-found-desc">
         找不到 ID 为 "{{ toolId }}" 的工具
       </p>
-      <RouterLink class="tool-view__not-found-btn" to="/">返回首页</RouterLink>
+      <RouterLink class="tool-view__not-found-btn pressable" to="/">返回首页</RouterLink>
     </Card>
   </div>
 </template>
@@ -119,20 +121,29 @@ watch(
 .tool-view {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 18px;
 }
 
 .tool-view__breadcrumb {
-  display: flex;
+  display: inline-flex;
+  align-self: flex-start;
   align-items: center;
   gap: 8px;
   font-size: 13px;
+  padding: 7px 14px;
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-sm), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  letter-spacing: -0.01em;
+}
+
+[data-theme="dark"] .tool-view__breadcrumb {
+  box-shadow: var(--shadow-sm), inset 0 0.5px 0 rgba(255, 255, 255, 0.06);
 }
 
 .tool-view__breadcrumb-link {
   color: var(--text-muted);
   text-decoration: none;
-  transition: color 0.2s ease;
+  transition: color var(--duration-fast) var(--ease-out-soft);
 }
 
 .tool-view__breadcrumb-link:hover {
@@ -141,11 +152,12 @@ watch(
 
 .tool-view__breadcrumb-sep {
   color: var(--text-muted);
+  opacity: 0.55;
 }
 
 .tool-view__breadcrumb-current {
   color: var(--text-primary);
-  font-weight: 500;
+  font-weight: 550;
 }
 
 .tool-view__header {
@@ -153,21 +165,29 @@ watch(
   align-items: center;
   justify-content: space-between;
   gap: 16px;
+  padding: 18px 20px;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+[data-theme="dark"] .tool-view__header {
+  box-shadow: var(--shadow-md), inset 0 0.5px 0 rgba(255, 255, 255, 0.06);
 }
 
 .tool-view__header-left {
   display: flex;
   align-items: center;
   gap: 16px;
+  min-width: 0;
 }
 
 .tool-view__icon {
-  width: 56px;
-  height: 56px;
+  width: 52px;
+  height: 52px;
   border-radius: var(--radius-lg);
   background: transparent;
-  border: 2px solid var(--border);
-  color: var(--text-primary);
+  border: 1px solid color-mix(in srgb, #000 14%, var(--surface-solid));
+  color: var(--color-primary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -175,27 +195,29 @@ watch(
 }
 
 [data-theme="dark"] .tool-view__icon {
-  border-color: #404040;
-  color: #fafafa;
+  border-color: color-mix(in srgb, #000 35%, var(--surface-solid));
 }
 
 .tool-view__icon svg {
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
 }
 
 .tool-view__title {
-  font-size: 24px;
+  font-size: clamp(1.25rem, 2.5vw, 1.5rem);
   font-weight: 700;
   color: var(--text-primary);
   margin: 0 0 4px;
-  letter-spacing: -0.5px;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
 }
 
 .tool-view__desc {
   font-size: 14px;
   color: var(--text-secondary);
   margin: 0;
+  line-height: 1.5;
+  letter-spacing: -0.01em;
 }
 
 .tool-view__content {
@@ -206,7 +228,7 @@ watch(
 .tool-view__error {
   padding: 48px;
   text-align: center;
-  color: #ef4444;
+  color: var(--color-primary);
 }
 
 .tool-view__not-found {
@@ -214,40 +236,62 @@ watch(
   text-align: center;
 }
 
-.tool-view__not-found-icon {
-  width: 56px;
-  height: 56px;
-  color: var(--text-muted);
+.tool-view__not-found-icon-wrap {
+  width: 68px;
+  height: 68px;
   margin: 0 auto 16px;
+  border-radius: var(--radius-xl);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--color-primary) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 14%, var(--surface-border));
+  box-shadow: var(--shadow-md), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.tool-view__not-found-icon {
+  width: 28px;
+  height: 28px;
+  color: var(--color-primary);
 }
 
 .tool-view__not-found-title {
-  font-size: 20px;
-  font-weight: 600;
+  font-size: 18px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
   color: var(--text-primary);
-  margin: 0 0 8px;
+  margin: 0 0 6px;
 }
 
 .tool-view__not-found-desc {
   font-size: 14px;
   color: var(--text-muted);
-  margin: 0 0 24px;
+  margin: 0 0 22px;
 }
 
 .tool-view__not-found-btn {
-  display: inline-block;
-  padding: 10px 24px;
-  border-radius: var(--radius-md);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 11px 24px;
+  border-radius: var(--radius-full);
   background: var(--color-primary);
   color: white;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 550;
+  letter-spacing: -0.01em;
   text-decoration: none;
-  transition: background-color 0.2s ease;
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--color-primary) 30%, transparent),
+  inset 0 1px 0 rgba(255, 255, 255, 0.28);
+  transition: transform var(--duration-press) ease-out,
+  box-shadow var(--duration-fast) var(--ease-out-soft),
+  background-color var(--duration-fast) var(--ease-out-soft);
 }
 
 .tool-view__not-found-btn:hover {
-  background: var(--color-primary-hover);
   color: white;
+  background: var(--color-primary-hover);
+  box-shadow: 0 12px 28px color-mix(in srgb, var(--color-primary) 36%, transparent),
+  inset 0 1px 0 rgba(255, 255, 255, 0.32);
 }
 </style>

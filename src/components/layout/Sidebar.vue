@@ -18,10 +18,12 @@ function handleClose() {
 </script>
 
 <template>
-  <aside :class="['sidebar', 'glass', { 'sidebar--open': open }]">
+  <aside :class="['sidebar', 'glass-elevated', { 'sidebar--open': open }]">
     <div class="sidebar__header">
       <div class="sidebar__logo">
-        <img alt="WebTools" class="sidebar__logo-icon" src="/favicon.png"/>
+        <div class="sidebar__logo-badge">
+          <img alt="WebTools" class="sidebar__logo-icon" src="/favicon.png"/>
+        </div>
         <span class="sidebar__logo-text">WebTools</span>
       </div>
     </div>
@@ -73,40 +75,56 @@ function handleClose() {
 <style scoped>
 .sidebar {
   position: fixed;
-  top: 0;
-  left: 0;
+  top: var(--layout-inset);
+  left: var(--layout-inset);
+  bottom: var(--layout-inset);
   width: var(--sidebar-width);
-  height: 100vh;
+  height: auto;
   display: flex;
   flex-direction: column;
-  padding: 20px 16px;
+  padding: 16px 12px;
   z-index: 200;
-  border-right: 1px solid var(--surface-border);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-lg), inset 0 1px 0 rgba(255, 255, 255, 0.42);
+}
+
+[data-theme="dark"] .sidebar {
+  box-shadow: var(--shadow-lg), inset 0 0.5px 0 rgba(255, 255, 255, 0.08);
 }
 
 .sidebar__header {
-  padding: 8px 12px 20px;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 12px;
+  padding: 4px 8px 16px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid var(--surface-border-strong);
 }
 
 .sidebar__logo {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
+}
+
+.sidebar__logo-badge {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
 .sidebar__logo-icon {
-  width: 28px;
-  height: 28px;
-  border-radius: var(--radius-sm);
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
 }
 
 .sidebar__logo-text {
   font-size: 18px;
   font-weight: 700;
   color: var(--text-primary);
-  letter-spacing: -0.5px;
+  letter-spacing: -0.03em;
 }
 
 .sidebar__nav {
@@ -115,47 +133,62 @@ function handleClose() {
   display: flex;
   flex-direction: column;
   gap: 2px;
+  padding: 4px 0;
 }
 
 .sidebar__item {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 10px 12px;
+  padding: 11px 14px;
   border-radius: var(--radius-md);
   color: var(--text-secondary);
   text-decoration: none;
   font-size: 14px;
   font-weight: 500;
-  transition: background-color 0.2s ease,
-  color 0.2s ease;
+  letter-spacing: -0.01em;
+  transition: background-color var(--duration-fast) var(--ease-out-soft),
+  color var(--duration-fast) var(--ease-out-soft),
+  box-shadow var(--duration-fast) var(--ease-out-soft),
+  transform var(--duration-press) ease-out;
   position: relative;
+  border: 1px solid transparent;
 }
 
 .sidebar__item:hover {
-  background: var(--bg-tertiary);
+  background: color-mix(in srgb, var(--bg-tertiary) 65%, transparent);
   color: var(--text-primary);
 }
 
+.sidebar__item:active {
+  transform: scale(0.97);
+}
+
 .sidebar__item--active {
-  background: var(--color-primary-light);
+  background: color-mix(in srgb, var(--color-primary) 12%, transparent);
   color: var(--color-primary);
+  border-color: color-mix(in srgb, var(--color-primary) 18%, transparent);
+  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.12),
+  inset 0 1px 0 rgba(255, 255, 255, 0.28);
+  font-weight: 600;
 }
 
 [data-theme="dark"] .sidebar__item--active {
-  background: rgba(59, 130, 246, 0.15);
+  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.18),
+  inset 0 0.5px 0 rgba(255, 255, 255, 0.05);
 }
 
 .sidebar__item--active::before {
   content: '';
   position: absolute;
-  left: -16px;
+  left: 0;
   top: 50%;
   transform: translateY(-50%);
   width: 3px;
-  height: 20px;
+  height: 16px;
   background: var(--color-primary);
   border-radius: 0 3px 3px 0;
+  box-shadow: 0 0 10px color-mix(in srgb, var(--color-primary) 55%, transparent);
 }
 
 .sidebar__item-icon {
@@ -169,26 +202,35 @@ function handleClose() {
 }
 
 .sidebar__footer {
-  padding-top: 16px;
-  border-top: 1px solid var(--border);
+  padding-top: 12px;
+  margin-top: 4px;
+  border-top: 1px solid var(--surface-border-strong);
 }
 
 .sidebar__footer-link {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 10px 12px;
+  padding: 11px 14px;
   border-radius: var(--radius-md);
   color: var(--text-secondary);
   font-size: 14px;
   font-weight: 500;
-  transition: background-color 0.2s ease,
-  color 0.2s ease;
+  border: 1px solid transparent;
+  transition: background-color var(--duration-fast) var(--ease-out-soft),
+  color var(--duration-fast) var(--ease-out-soft),
+  border-color var(--duration-fast) var(--ease-out-soft),
+  transform var(--duration-press) ease-out;
 }
 
 .sidebar__footer-link:hover {
-  background: var(--bg-tertiary);
+  background: color-mix(in srgb, var(--bg-tertiary) 65%, transparent);
   color: var(--text-primary);
+  border-color: var(--surface-border-strong);
+}
+
+.sidebar__footer-link:active {
+  transform: scale(0.97);
 }
 
 .sidebar__footer-icon {
@@ -198,14 +240,26 @@ function handleClose() {
 
 @media (max-width: 768px) {
   .sidebar {
-    transform: translateX(-100%);
-    transition: transform 0.3s ease;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: min(var(--sidebar-width), 86vw);
+    height: 100dvh;
+    border-radius: 0 var(--radius-2xl) var(--radius-2xl) 0;
+    transform: translateX(-105%);
+    transition: transform var(--duration-sheet) var(--ease-drawer);
     z-index: 200;
-    background: rgba(255, 255, 255, 0.92);
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(var(--blur-strong)) saturate(180%);
+    -webkit-backdrop-filter: blur(var(--blur-strong)) saturate(180%);
+    border-color: rgba(255, 255, 255, 0.7);
+    padding-top: max(16px, env(safe-area-inset-top));
+    padding-bottom: max(16px, env(safe-area-inset-bottom));
   }
 
   [data-theme="dark"] .sidebar {
-    background: rgba(23, 23, 23, 0.92);
+    background: rgba(18, 18, 18, 0.94);
+    border-color: rgba(255, 255, 255, 0.06);
   }
 
   .sidebar--open {

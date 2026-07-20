@@ -6,12 +6,13 @@ const toast = useToast()
 </script>
 
 <template>
-  <div class="toast-container">
+  <div aria-live="polite" aria-relevant="additions" class="toast-container">
     <TransitionGroup name="toast">
       <div
         v-for="item in toast.toasts"
         :key="item.id"
         :class="['toast', `toast--${item.type}`]"
+        role="status"
       >
         <svg
           v-if="item.type === 'success'"
@@ -66,35 +67,46 @@ const toast = useToast()
   z-index: 9999;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  align-items: flex-end;
+  gap: 10px;
   pointer-events: none;
+  max-width: min(360px, calc(100vw - 32px));
 }
 
 .toast {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 12px 20px;
-  border-radius: var(--radius-md);
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: 10px;
+  padding: 12px 18px;
+  border-radius: var(--radius-full);
   font-size: 14px;
-  font-weight: 500;
-  box-shadow: var(--shadow-lg);
+  font-weight: 550;
+  letter-spacing: -0.01em;
   pointer-events: auto;
-  animation: toast-enter 0.3s ease;
+  backdrop-filter: blur(var(--blur)) saturate(180%);
+  -webkit-backdrop-filter: blur(var(--blur)) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow: var(--shadow-lg), inset 0 1px 0 rgba(255, 255, 255, 0.28);
+  white-space: nowrap;
+  width: max-content;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .toast--success {
-  background: #10b981;
+  background: color-mix(in srgb, #10b981 82%, transparent);
   color: #fff;
 }
 
 .toast--error {
-  background: #ef4444;
+  background: color-mix(in srgb, #ef4444 82%, transparent);
   color: #fff;
 }
 
 .toast--info {
-  background: #3b82f6;
+  background: color-mix(in srgb, var(--color-primary) 82%, transparent);
   color: #fff;
 }
 
@@ -106,35 +118,43 @@ const toast = useToast()
 
 .toast__message {
   line-height: 1.4;
+  white-space: nowrap;
 }
 
-.toast-enter-active {
-  animation: toast-enter 0.3s ease;
-}
-
+.toast-enter-active,
 .toast-leave-active {
-  animation: toast-leave 0.3s ease;
+  transition: transform var(--duration-fast) var(--ease-out-soft),
+  opacity var(--duration-fast) var(--ease-out-soft);
 }
 
-@keyframes toast-enter {
-  from {
-    opacity: 0;
-    transform: translateX(100%);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+.toast-enter-from,
+.toast-leave-to {
+  opacity: 0;
+  transform: translateX(24px) scale(0.95);
 }
 
-@keyframes toast-leave {
-  from {
-    opacity: 1;
-    transform: translateX(0);
+.toast-enter-to,
+.toast-leave-from {
+  opacity: 1;
+  transform: translateX(0) scale(1);
+}
+
+.toast-move {
+  transition: transform var(--duration-fast) var(--ease-out-soft);
+}
+
+@media (max-width: 768px) {
+  .toast-container {
+    top: auto;
+    bottom: max(20px, env(safe-area-inset-bottom));
+    right: 16px;
+    left: 16px;
+    align-items: center;
   }
-  to {
-    opacity: 0;
-    transform: translateX(100%);
+
+  .toast {
+    width: auto;
+    max-width: 100%;
   }
 }
 </style>

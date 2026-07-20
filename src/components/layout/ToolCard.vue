@@ -20,7 +20,7 @@ defineProps<Props>()
           stroke="currentColor"
           stroke-linecap="round"
           stroke-linejoin="round"
-          stroke-width="2"
+          stroke-width="1.75"
           viewBox="0 0 24 24"
         >
           <path d="M0 0h24v24H0z" fill="none" stroke="none"/>
@@ -33,7 +33,7 @@ defineProps<Props>()
           stroke="currentColor"
           stroke-linecap="round"
           stroke-linejoin="round"
-          stroke-width="2"
+          stroke-width="1.75"
           viewBox="0 0 24 24"
         >
           <path
@@ -68,10 +68,11 @@ defineProps<Props>()
   text-decoration: none;
   color: inherit;
   display: block;
+  height: 100%;
 }
 
 .tool-card {
-  padding: 24px;
+  padding: 22px;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -82,38 +83,61 @@ defineProps<Props>()
   height: 48px;
   border-radius: var(--radius-md);
   background: transparent;
-  border: 2px solid var(--border);
-  color: var(--text-primary);
+  border: 1px solid color-mix(in srgb, #000 14%, var(--surface-solid));
+  color: var(--color-primary);
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 16px;
+  transition: transform var(--duration-hover) var(--ease-out-soft),
+  border-color var(--duration-fast) var(--ease-out-soft);
 }
 
 [data-theme="dark"] .tool-card__icon {
-  border-color: #404040;
-  color: #fafafa;
+  border-color: color-mix(in srgb, #000 35%, var(--surface-solid));
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .tool-card:hover .tool-card__icon {
+    transform: scale(1.05);
+    border-color: color-mix(in srgb, #000 22%, var(--surface-solid));
+  }
+
+  [data-theme="dark"] .tool-card:hover .tool-card__icon {
+    border-color: color-mix(in srgb, #000 50%, var(--surface-solid));
+  }
+}
+
+.tool-card:active .tool-card__icon {
+  transform: scale(0.98);
+  transition: transform var(--duration-press) ease-out;
 }
 
 .tool-card__icon svg {
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
 }
 
 .tool-card__title {
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 650;
+  letter-spacing: -0.022em;
   color: var(--text-primary);
-  margin: 0 0 8px;
-  line-height: 1.4;
+  margin: 0 0 6px;
+  line-height: 1.3;
 }
 
 .tool-card__desc {
   font-size: 13px;
   color: var(--text-secondary);
-  margin: 0 0 16px;
-  line-height: 1.6;
+  margin: 0 0 18px;
+  line-height: 1.55;
+  letter-spacing: -0.005em;
   flex: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .tool-card__footer {
@@ -125,18 +149,34 @@ defineProps<Props>()
   display: inline-flex;
   align-items: center;
   gap: 4px;
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 550;
+  letter-spacing: -0.01em;
   color: var(--color-primary);
-  transition: gap 0.2s ease;
-}
-
-.tool-card:hover .tool-card__btn {
-  gap: 8px;
+  background: color-mix(in srgb, var(--color-primary) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 12%, transparent);
+  transition: background-color var(--duration-fast) var(--ease-out-soft),
+  border-color var(--duration-fast) var(--ease-out-soft),
+  box-shadow var(--duration-fast) var(--ease-out-soft);
 }
 
 .tool-card__btn-icon {
   width: 14px;
   height: 14px;
+  transition: transform var(--duration-hover) var(--ease-out-soft);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .tool-card:hover .tool-card__btn {
+    background: color-mix(in srgb, var(--color-primary) 14%, transparent);
+    border-color: color-mix(in srgb, var(--color-primary) 26%, transparent);
+    box-shadow: 0 4px 12px color-mix(in srgb, var(--color-primary) 14%, transparent);
+  }
+
+  .tool-card:hover .tool-card__btn-icon {
+    transform: translateX(3px);
+  }
 }
 </style>

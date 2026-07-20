@@ -24,21 +24,35 @@ withDefaults(defineProps<Props>(), {
 
 <style scoped>
 .card {
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-sm);
-  transition: transform 0.2s ease,
-  box-shadow 0.2s ease,
-  border-color 0.2s ease;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md), inset 0 1px 0 rgba(255, 255, 255, 0.45);
+  transition: transform var(--duration-hover) var(--ease-out-soft),
+  box-shadow var(--duration-hover) var(--ease-out-soft),
+  border-color var(--duration-fast) var(--ease-out-soft),
+  background-color var(--duration-fast) var(--ease-out-soft);
   overflow: hidden;
 }
 
-.card--hover:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-lg);
-  border-color: var(--color-primary);
+[data-theme="dark"] .card {
+  box-shadow: var(--shadow-md), inset 0 0.5px 0 rgba(255, 255, 255, 0.06);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .card--hover:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-xl), var(--shadow-glow);
+    border-color: color-mix(in srgb, var(--color-primary) 28%, var(--surface-border));
+    background: var(--surface-elevated);
+  }
 }
 
 .card--clickable {
   cursor: pointer;
+}
+
+.card--clickable:active {
+  transform: scale(0.98) translateY(0);
+  transition: transform var(--duration-press) ease-out;
+  box-shadow: var(--shadow-sm), inset 0 1px 0 rgba(255, 255, 255, 0.35);
 }
 </style>
