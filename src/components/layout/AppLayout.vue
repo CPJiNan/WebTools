@@ -3,6 +3,7 @@ import {ref, watch} from 'vue'
 import {useRouter} from 'vue-router'
 import Sidebar from './Sidebar.vue'
 import ThemeToggle from '@/components/ui/ThemeToggle.vue'
+import Toast from '@/components/ui/Toast.vue'
 import {useSearch} from '@/stores/search'
 
 const router = useRouter()
@@ -94,6 +95,8 @@ function closeSidebar() {
         </div>
       </main>
     </div>
+
+    <Toast/>
   </div>
 </template>
 
@@ -167,12 +170,11 @@ function closeSidebar() {
 }
 
 .app-layout__header {
-  position: sticky;
+  position: relative;
   top: 0;
   z-index: 50;
   padding: 12px 32px;
   border-bottom: 1px solid var(--surface-border);
-  position: relative;
 }
 
 .app-layout__header-inner {

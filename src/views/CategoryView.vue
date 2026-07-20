@@ -20,12 +20,6 @@ const tools = computed(() => getToolsByCategory(categoryId.value))
       <span class="category-view__breadcrumb-current">{{ category?.name || '分类' }}</span>
     </nav>
 
-    <div v-if="category" class="category-view__header">
-      <h1 class="category-view__title">{{ category.name }}</h1>
-      <p class="category-view__desc">{{ category.description }}</p>
-      <div class="category-view__count">共 {{ tools.length }} 个工具</div>
-    </div>
-
     <div v-if="tools.length > 0" class="category-view__grid">
       <ToolCard v-for="tool in tools" :key="tool.id" :tool="tool"/>
     </div>
@@ -79,37 +73,6 @@ const tools = computed(() => getToolsByCategory(categoryId.value))
 
 .category-view__breadcrumb-current {
   color: var(--text-primary);
-  font-weight: 500;
-}
-
-.category-view__header {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.category-view__title {
-  font-size: 28px;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin: 0;
-  letter-spacing: -0.5px;
-}
-
-.category-view__desc {
-  font-size: 14px;
-  color: var(--text-secondary);
-  margin: 0;
-}
-
-.category-view__count {
-  font-size: 13px;
-  color: var(--text-muted);
-  background: var(--bg-tertiary);
-  padding: 4px 12px;
-  border-radius: 999px;
-  display: inline-block;
-  align-self: flex-start;
   font-weight: 500;
 }
 

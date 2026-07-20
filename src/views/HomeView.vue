@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import {computed} from 'vue'
-import {tools} from '@/tools'
+import {categories, tools} from '@/tools'
 import {useSearch} from '@/stores/search'
 import ToolCard from '@/components/layout/ToolCard.vue'
 import Card from '@/components/ui/Card.vue'
@@ -19,18 +19,41 @@ const filteredTools = computed(() => {
     )
   })
 })
+
+const groupedTools = computed(() => {
+  const result: Array<{ categoryId: string; categoryName: string; tools: typeof tools }> = []
+
+  for (const category of categories) {
+    const categoryTools = filteredTools.value.filter((t) => t.categoryId === category.id)
+    if (categoryTools.length > 0) {
+      result.push({
+        categoryId: category.id,
+        categoryName: category.name,
+        tools: categoryTools,
+      })
+    }
+  }
+
+  return result
+})
 </script>
 
 <template>
   <div class="home">
-    <section v-if="filteredTools.length > 0" class="home__section">
-      <h2 class="home__section-title">
-        {{ searchKeyword.trim() ? `搜索结果 (${filteredTools.length})` : '工具列表' }}
-      </h2>
-      <div class="home__tools-grid">
-        <ToolCard v-for="tool in filteredTools" :key="tool.id" :tool="tool"/>
-      </div>
-    </section>
+    <template v-if="groupedTools.length > 0">
+      <section
+        v-for="group in groupedTools"
+        :key="group.categoryId"
+        class="home__section"
+      >
+        <h2 class="home__section-title">
+          {{ searchKeyword.trim() ? `搜索结果 (${filteredTools.length})` : group.categoryName }}
+        </h2>
+        <div class="home__tools-grid">
+          <ToolCard v-for="tool in group.tools" :key="tool.id" :tool="tool"/>
+        </div>
+      </section>
+    </template>
 
     <section v-else class="home__section">
       <Card class="home__empty">
@@ -44,7 +67,8 @@ const filteredTools = computed(() => {
           viewBox="0 0 24 24"
         >
           <path
-            d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+            d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+          />
         </svg>
         <h3 class="home__empty-title">{{ searchKeyword.trim() ? '未找到相关工具' : '暂无工具' }}</h3>
       </Card>
