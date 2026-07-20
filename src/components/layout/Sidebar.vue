@@ -52,7 +52,7 @@ function handleClose() {
     <div class="sidebar__footer">
       <a
         class="sidebar__footer-link"
-        href="https://github.com"
+        href="https://github.com/CPJiNan/WebTools"
         rel="noopener noreferrer"
         target="_blank"
       >
