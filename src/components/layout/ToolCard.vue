@@ -94,7 +94,7 @@ defineProps<Props>()
 }
 
 [data-theme="dark"] .tool-card__icon {
-  border-color: color-mix(in srgb, #000 35%, var(--surface-solid));
+  border-color: color-mix(in srgb, #fff 14%, var(--surface-solid));
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -104,7 +104,7 @@ defineProps<Props>()
   }
 
   [data-theme="dark"] .tool-card:hover .tool-card__icon {
-    border-color: color-mix(in srgb, #000 50%, var(--surface-solid));
+    border-color: color-mix(in srgb, #fff 22%, var(--surface-solid));
   }
 }
 

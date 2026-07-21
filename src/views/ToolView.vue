@@ -195,7 +195,7 @@ watch(
 }
 
 [data-theme="dark"] .tool-view__icon {
-  border-color: color-mix(in srgb, #000 35%, var(--surface-solid));
+  border-color: color-mix(in srgb, #fff 14%, var(--surface-solid));
 }
 
 .tool-view__icon svg {

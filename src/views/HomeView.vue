@@ -163,7 +163,7 @@ const groupedTools = computed(() => {
 }
 
 [data-theme="dark"] .home__empty-icon-wrap {
-  border-color: color-mix(in srgb, #000 35%, var(--surface-solid));
+  border-color: color-mix(in srgb, #fff 14%, var(--surface-solid));
 }
 
 .home__empty-icon {
