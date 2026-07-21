@@ -11,6 +11,15 @@ export const tools: Tool[] = [
     tags: ['取色器', 'RGB', 'HSL', 'HSV', 'HEX'],
     component: () => import('./design/color-picker/index.vue'),
   },
+  {
+    id: 'sqlite-editor',
+    categoryId: 'database',
+    name: 'SQLite 编辑器',
+    description: 'SQLite 可视化编辑器。',
+    icon: 'sqlite-editor',
+    tags: ['SQLite', 'SQL', '数据库'],
+    component: () => import('./database/sqlite-editor/index.vue'),
+  },
 ]
 
 export function getToolById(id: string): Tool | undefined {
