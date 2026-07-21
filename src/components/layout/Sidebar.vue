@@ -249,17 +249,17 @@ function handleClose() {
     transform: translateX(-105%);
     transition: transform var(--duration-sheet) var(--ease-drawer);
     z-index: 200;
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.97);
     backdrop-filter: blur(var(--blur-strong)) saturate(180%);
     -webkit-backdrop-filter: blur(var(--blur-strong)) saturate(180%);
-    border-color: rgba(255, 255, 255, 0.7);
+    border-color: rgba(255, 255, 255, 0.85);
     padding-top: max(16px, env(safe-area-inset-top));
     padding-bottom: max(16px, env(safe-area-inset-bottom));
   }
 
   [data-theme="dark"] .sidebar {
-    background: rgba(18, 18, 18, 0.94);
-    border-color: rgba(255, 255, 255, 0.06);
+    background: rgba(18, 18, 18, 0.98);
+    border-color: rgba(255, 255, 255, 0.08);
   }
 
   .sidebar--open {

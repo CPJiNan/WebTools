@@ -81,9 +81,6 @@ const groupedTools = computed(() => {
           </svg>
         </div>
         <h3 class="home__empty-title">{{ searchKeyword.trim() ? '未找到相关工具' : '暂无工具' }}</h3>
-        <p class="home__empty-desc">
-          {{ searchKeyword.trim() ? '试试其他关键词' : '敬请期待更多工具上线' }}
-        </p>
       </Card>
     </section>
   </div>
@@ -153,21 +150,25 @@ const groupedTools = computed(() => {
 }
 
 .home__empty-icon-wrap {
-  width: 68px;
-  height: 68px;
+  width: 48px;
+  height: 48px;
   margin: 0 auto 16px;
-  border-radius: var(--radius-xl);
+  border-radius: var(--radius-md);
   display: flex;
   align-items: center;
   justify-content: center;
-  background: color-mix(in srgb, var(--color-primary) 10%, transparent);
-  border: 1px solid color-mix(in srgb, var(--color-primary) 14%, var(--surface-border));
-  box-shadow: var(--shadow-md), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  background: transparent;
+  border: 1px solid color-mix(in srgb, #000 14%, var(--surface-solid));
+  color: var(--color-primary);
+}
+
+[data-theme="dark"] .home__empty-icon-wrap {
+  border-color: color-mix(in srgb, #000 35%, var(--surface-solid));
 }
 
 .home__empty-icon {
-  width: 28px;
-  height: 28px;
+  width: 22px;
+  height: 22px;
   color: var(--color-primary);
 }
 
@@ -176,13 +177,6 @@ const groupedTools = computed(() => {
   font-weight: 650;
   letter-spacing: -0.02em;
   color: var(--text-primary);
-  margin: 0 0 6px;
-}
-
-.home__empty-desc {
-  font-size: 14px;
-  color: var(--text-muted);
   margin: 0;
-  line-height: 1.5;
 }
 </style>
