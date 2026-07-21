@@ -64,8 +64,20 @@ const saving = ref(false)
 const fileInputRef = ref<HTMLInputElement | null>(null)
 const editInputRef = ref<HTMLInputElement | null>(null)
 const fileNameInputRef = ref<HTMLInputElement | null>(null)
+const tableNameInputRef = ref<HTMLInputElement | null>(null)
+
+function setEditInputRef(el: unknown) {
+  editInputRef.value = el instanceof HTMLInputElement ? el : null
+}
+
+function setTableNameInputRef(el: unknown) {
+  tableNameInputRef.value = el instanceof HTMLInputElement ? el : null
+}
+
 const editingFileName = ref(false)
 const fileNameDraft = ref('')
+const renamingTable = ref<string | null>(null)
+const tableNameDraft = ref('')
 
 let rowSeq = 0
 
@@ -222,6 +234,105 @@ function onFileNameKeydown(event: KeyboardEvent) {
 
 function quoteIdent(name: string) {
   return `"${name.replace(/"/g, '""')}"`
+}
+
+function quoteString(value: string) {
+  return `'${value.replace(/'/g, "''")}'`
+}
+
+function normalizeTableName(raw: string): string {
+  return raw.trim()
+}
+
+function startRenameTable(table: string) {
+  if (!db.value) return
+  renamingTable.value = table
+  tableNameDraft.value = table
+  nextTick(() => {
+    const input = tableNameInputRef.value
+    if (!input) return
+    input.focus()
+    input.select()
+  })
+}
+
+function cancelRenameTable() {
+  renamingTable.value = null
+  tableNameDraft.value = ''
+}
+
+function commitRenameTable() {
+  if (!renamingTable.value || !db.value) return
+
+  const oldName = renamingTable.value
+  const newName = normalizeTableName(tableNameDraft.value)
+
+  if (!newName) {
+    toast.info('表名不能为空')
+    nextTick(() => tableNameInputRef.value?.focus())
+    return
+  }
+
+  if (newName === oldName) {
+    cancelRenameTable()
+    return
+  }
+
+  if (newName.toLowerCase().startsWith('sqlite_')) {
+    toast.error('表名不能使用 sqlite_ 前缀')
+    nextTick(() => tableNameInputRef.value?.focus())
+    return
+  }
+
+  if (tables.value.some((t) => t.toLowerCase() === newName.toLowerCase() && t !== oldName)) {
+    toast.error('表名已存在')
+    nextTick(() => tableNameInputRef.value?.focus())
+    return
+  }
+
+  if (selectedTable.value === oldName && dirtyCount.value > 0) {
+    const ok = window.confirm('当前有未保存的修改，是否继续？')
+    if (!ok) {
+      cancelRenameTable()
+      return
+    }
+  }
+
+  try {
+    const typeResult = db.value.exec(
+      `SELECT type
+       FROM sqlite_master
+       WHERE name = ${quoteString(oldName)}
+         AND type IN ('table', 'view') LIMIT 1`,
+    )
+    const objectType = String(typeResult[0]?.values[0]?.[0] ?? '')
+    if (objectType !== 'table') {
+      cancelRenameTable()
+      return
+    }
+
+    db.value.run(`ALTER TABLE ${quoteIdent(oldName)} RENAME TO ${quoteIdent(newName)}`)
+
+    renamingTable.value = null
+    tableNameDraft.value = ''
+    if (selectedTable.value === oldName) {
+      selectedTable.value = newName
+    }
+    refreshTables()
+    toast.success(`已将表重命名为 ${newName}`)
+  } catch (err) {
+    toast.error(err instanceof Error ? err.message : '重命名失败')
+  }
+}
+
+function onTableNameKeydown(event: KeyboardEvent) {
+  if (event.key === 'Enter') {
+    event.preventDefault()
+    commitRenameTable()
+  } else if (event.key === 'Escape') {
+    event.preventDefault()
+    cancelRenameTable()
+  }
 }
 
 function cellToDisplay(value: CellValue): string {
@@ -416,15 +527,14 @@ function exportDatabase() {
 
 function startEdit(row: GridRow, col: string) {
   if (!canEditTable.value || row.deleted) return
-  if (isBlobDisplay(row.values[col] ?? '')) {
-    toast.info('BLOB 字段不支持直接编辑')
-    return
-  }
+  if (isBlobDisplay(row.values[col] ?? '')) return
   editingCell.value = {rowId: row.id, col}
   editDraft.value = row.values[col] ?? ''
   nextTick(() => {
-    editInputRef.value?.focus()
-    editInputRef.value?.select()
+    const input = editInputRef.value
+    if (!input) return
+    input.focus()
+    input.select()
   })
 }
 
@@ -812,15 +922,33 @@ function isEditing(rowId: string, col: string) {
           <div v-else-if="tables.length === 0" class="sqlite__sidebar-empty">
             暂无表。
           </div>
-          <button
-            v-for="table in tables"
-            :key="table"
-            :class="['sqlite__table-item', selectedTable === table && 'sqlite__table-item--active']"
-            type="button"
-            @click="selectTable(table)"
-          >
-            {{ table }}
-          </button>
+          <template v-for="table in tables" :key="table">
+            <input
+              v-if="renamingTable === table"
+              :ref="setTableNameInputRef"
+              v-model="tableNameDraft"
+              :class="[
+                'sqlite__table-item',
+                'sqlite__table-item-input',
+                selectedTable === table && 'sqlite__table-item--active',
+              ]"
+              spellcheck="false"
+              type="text"
+              @blur="commitRenameTable"
+              @keydown="onTableNameKeydown"
+              @click.stop
+            />
+            <button
+              v-else
+              :class="['sqlite__table-item', selectedTable === table && 'sqlite__table-item--active']"
+              :title="`${table}（双击重命名）`"
+              type="button"
+              @click="selectTable(table)"
+              @dblclick.stop="startRenameTable(table)"
+            >
+              {{ table }}
+            </button>
+          </template>
         </aside>
 
         <section class="sqlite__main">
@@ -928,7 +1056,7 @@ function isEditing(rowId: string, col: string) {
                     >
                       <input
                         v-if="isEditing(row.id, col.name)"
-                        ref="editInputRef"
+                        :ref="setEditInputRef"
                         v-model="editDraft"
                         class="sqlite__cell-input"
                         type="text"
@@ -1238,6 +1366,17 @@ function isEditing(rowId: string, col: string) {
   background: color-mix(in srgb, var(--color-primary) 14%, transparent);
   color: var(--color-primary);
   font-weight: 600;
+}
+
+.sqlite__table-item-input {
+  outline: none;
+  cursor: text;
+  box-shadow: var(--ring);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 45%, var(--surface-border-strong));
+  background: var(--surface-solid);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
 }
 
 .sqlite__main {
