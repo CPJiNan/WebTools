@@ -2,20 +2,24 @@ import type {ToolCategory} from './types'
 
 export const categories: ToolCategory[] = [
   {
-    id: 'design',
-    name: '设计',
-  },
-  {
-    id: 'database',
-    name: '数据库',
+    id: 'time',
+    name: '时间',
   },
   {
     id: 'random',
     name: '随机',
   },
   {
-    id: 'time',
-    name: '时间',
+    id: 'design',
+    name: '设计',
+  },
+  {
+    id: 'image',
+    name: '图片',
+  },
+  {
+    id: 'database',
+    name: '数据库',
   },
 ]
 
