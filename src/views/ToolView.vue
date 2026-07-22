@@ -107,6 +107,21 @@ watch(
               <path d="M12 7v5l3 3"/>
             </svg>
             <svg
+              v-else-if="tool.icon === 'stopwatch'"
+              fill="none"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1.75"
+              viewBox="0 0 24 24"
+            >
+              <path d="M0 0h24v24H0z" fill="none" stroke="none"/>
+              <path d="M5 13a7 7 0 1 0 14 0a7 7 0 0 0 -14 0"/>
+              <path d="M14.5 10.5l-2.5 2.5"/>
+              <path d="M17 8l1 -1"/>
+              <path d="M9 3h6"/>
+            </svg>
+            <svg
               v-else
               fill="none"
               stroke="currentColor"
