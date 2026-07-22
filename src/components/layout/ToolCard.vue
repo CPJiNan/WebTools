@@ -86,6 +86,20 @@ defineProps<Props>()
           <path d="M9 3h6"/>
         </svg>
         <svg
+          v-else-if="tool.icon === 'timer'"
+          fill="none"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="1.75"
+          viewBox="0 0 24 24"
+        >
+          <path d="M0 0h24v24H0z" fill="none" stroke="none"/>
+          <path d="M10 2h4"/>
+          <path d="M12 14v-4"/>
+          <path d="M12 22a8 8 0 1 0 0 -16a8 8 0 0 0 0 16"/>
+        </svg>
+        <svg
           v-else
           fill="none"
           stroke="currentColor"

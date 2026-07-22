@@ -47,6 +47,15 @@ export const tools: Tool[] = [
     tags: ['秒表', '计时'],
     component: () => import('./time/stopwatch/index.vue'),
   },
+  {
+    id: 'timer',
+    categoryId: 'time',
+    name: '计时器',
+    description: '倒计时工具。',
+    icon: 'timer',
+    tags: ['计时器', '倒计时'],
+    component: () => import('./time/timer/index.vue'),
+  },
 ]
 
 export function getToolById(id: string): Tool | undefined {
