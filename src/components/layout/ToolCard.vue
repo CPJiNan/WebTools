@@ -58,6 +58,19 @@ defineProps<Props>()
           <circle cx="12" cy="12" fill="currentColor" r=".5"/>
         </svg>
         <svg
+          v-else-if="tool.icon === 'clock'"
+          fill="none"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="1.75"
+          viewBox="0 0 24 24"
+        >
+          <path d="M0 0h24v24H0z" fill="none" stroke="none"/>
+          <circle cx="12" cy="12" r="9"/>
+          <path d="M12 7v5l3 3"/>
+        </svg>
+        <svg
           v-else
           fill="none"
           stroke="currentColor"

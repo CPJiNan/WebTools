@@ -29,6 +29,15 @@ export const tools: Tool[] = [
     tags: ['随机数'],
     component: () => import('./random/random-number/index.vue'),
   },
+  {
+    id: 'clock',
+    categoryId: 'time',
+    name: '时钟',
+    description: '查看当前时间。',
+    icon: 'clock',
+    tags: ['时钟', '时间', '时区'],
+    component: () => import('./time/clock/index.vue'),
+  },
 ]
 
 export function getToolById(id: string): Tool | undefined {

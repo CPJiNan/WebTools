@@ -13,6 +13,10 @@ export const categories: ToolCategory[] = [
     id: 'random',
     name: '随机',
   },
+  {
+    id: 'time',
+    name: '时间',
+  },
 ]
 
 export function getCategoryById(id: string): ToolCategory | undefined {
