@@ -9,6 +9,10 @@ export const categories: ToolCategory[] = [
     id: 'database',
     name: '数据库',
   },
+  {
+    id: 'random',
+    name: '随机',
+  },
 ]
 
 export function getCategoryById(id: string): ToolCategory | undefined {

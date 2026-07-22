@@ -1230,12 +1230,6 @@ function isEditing(rowId: string, col: string) {
   color var(--duration-fast) var(--ease-out-soft);
 }
 
-.sqlite__tab--active {
-  background: var(--surface-solid);
-  color: var(--text-primary);
-  box-shadow: var(--shadow-sm);
-}
-
 .sqlite__btn {
   display: inline-flex;
   align-items: center;
@@ -1362,12 +1356,6 @@ function isEditing(rowId: string, col: string) {
   background: color-mix(in srgb, var(--color-primary) 8%, transparent);
 }
 
-.sqlite__table-item--active {
-  background: color-mix(in srgb, var(--color-primary) 14%, transparent);
-  color: var(--color-primary);
-  font-weight: 600;
-}
-
 .sqlite__table-item-input {
   outline: none;
   cursor: text;
@@ -1486,20 +1474,6 @@ function isEditing(rowId: string, col: string) {
   max-width: 280px;
 }
 
-.sqlite__td--editable {
-  cursor: cell;
-}
-
-.sqlite__td--editable:hover {
-  background: color-mix(in srgb, var(--color-primary) 5%, transparent);
-}
-
-.sqlite__td--null .sqlite__cell-text,
-.sqlite__td--null {
-  color: var(--text-muted);
-  font-style: italic;
-}
-
 .sqlite__cell-text {
   display: block;
   padding: 8px 12px;
@@ -1546,12 +1520,6 @@ function isEditing(rowId: string, col: string) {
   align-items: center;
   justify-content: center;
   gap: 12px;
-}
-
-.sqlite__hint {
-  margin: 0;
-  font-size: 12px;
-  color: var(--text-muted);
 }
 
 .sqlite__sql-editor {

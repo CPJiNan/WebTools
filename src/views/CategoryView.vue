@@ -65,7 +65,7 @@ const tools = computed(() => getToolsByCategory(categoryId.value))
 }
 
 [data-theme="dark"] .category-view__breadcrumb {
-  box-shadow: var(--shadow-sm), inset 0 0.5px 0 rgba(255, 255, 255, 0.06);
+  box-shadow: var(--shadow-sm), inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
 .category-view__breadcrumb-link {

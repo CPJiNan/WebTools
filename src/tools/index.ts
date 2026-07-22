@@ -20,6 +20,15 @@ export const tools: Tool[] = [
     tags: ['SQLite', 'SQL', '数据库'],
     component: () => import('./database/sqlite-editor/index.vue'),
   },
+  {
+    id: 'random-number',
+    categoryId: 'random',
+    name: '随机数生成器',
+    description: '在自定义范围内生成随机数。',
+    icon: 'random-number',
+    tags: ['随机数'],
+    component: () => import('./random/random-number/index.vue'),
+  },
 ]
 
 export function getToolById(id: string): Tool | undefined {

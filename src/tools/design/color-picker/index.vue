@@ -592,7 +592,7 @@ onMounted(() => {
 }
 
 [data-theme="dark"] .color-picker__main {
-  box-shadow: var(--shadow-sm), inset 0 0.5px 0 rgba(255, 255, 255, 0.05);
+  box-shadow: var(--shadow-sm), inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .color-picker__picker {
@@ -631,7 +631,7 @@ onMounted(() => {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  border: 2.5px solid #fff;
+  border: 3px solid #fff;
   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.18), 0 4px 12px rgba(0, 0, 0, 0.32);
   transform: translate(-50%, -50%);
   pointer-events: none;
@@ -741,7 +741,7 @@ onMounted(() => {
 }
 
 [data-theme="dark"] .color-picker__inputs {
-  box-shadow: var(--shadow-sm), inset 0 0.5px 0 rgba(255, 255, 255, 0.05);
+  box-shadow: var(--shadow-sm), inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .color-picker__input-group {
@@ -757,7 +757,7 @@ onMounted(() => {
 }
 
 [data-theme="dark"] .color-picker__input-group {
-  box-shadow: inset 0 0.5px 0 rgba(255, 255, 255, 0.04);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
 .color-picker__input-group label {
@@ -850,7 +850,7 @@ onMounted(() => {
 }
 
 [data-theme="dark"] .color-picker__actions {
-  box-shadow: var(--shadow-sm), inset 0 0.5px 0 rgba(255, 255, 255, 0.05);
+  box-shadow: var(--shadow-sm), inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .color-picker__eyedropper {
@@ -900,7 +900,7 @@ onMounted(() => {
 }
 
 [data-theme="dark"] .color-picker__copy {
-  box-shadow: inset 0 0.5px 0 rgba(255, 255, 255, 0.04);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
 .color-picker__copy:hover {

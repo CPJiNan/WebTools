@@ -41,6 +41,23 @@ defineProps<Props>()
           <path d="M4 12v6c0 1.66 3.58 3 8 3s8-1.34 8-3v-6"/>
         </svg>
         <svg
+          v-else-if="tool.icon === 'random-number'"
+          fill="none"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="1.75"
+          viewBox="0 0 24 24"
+        >
+          <path d="M0 0h24v24H0z" fill="none" stroke="none"/>
+          <rect height="16" rx="2" width="16" x="4" y="4"/>
+          <circle cx="8.5" cy="8.5" fill="currentColor" r=".5"/>
+          <circle cx="15.5" cy="8.5" fill="currentColor" r=".5"/>
+          <circle cx="15.5" cy="15.5" fill="currentColor" r=".5"/>
+          <circle cx="8.5" cy="15.5" fill="currentColor" r=".5"/>
+          <circle cx="12" cy="12" fill="currentColor" r=".5"/>
+        </svg>
+        <svg
           v-else
           fill="none"
           stroke="currentColor"
