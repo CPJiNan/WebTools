@@ -360,8 +360,6 @@ onBeforeUnmount(() => {
         </div>
         <div aria-hidden="true" class="lottery__reel-fade lottery__reel-fade--top"/>
         <div aria-hidden="true" class="lottery__reel-fade lottery__reel-fade--bottom"/>
-        <div aria-hidden="true" class="lottery__reel-line lottery__reel-line--top"/>
-        <div aria-hidden="true" class="lottery__reel-line lottery__reel-line--bottom"/>
       </div>
     </div>
 
@@ -746,31 +744,6 @@ onBeforeUnmount(() => {
     color-mix(in srgb, var(--bg-secondary) 88%, transparent),
     transparent
   );
-}
-
-.lottery__reel-line {
-  position: absolute;
-  left: 8%;
-  right: 8%;
-  height: 1px;
-  pointer-events: none;
-  z-index: 3;
-  background: color-mix(in srgb, var(--color-primary) 35%, transparent);
-  opacity: 0;
-  transition: opacity var(--duration-ui) var(--ease-out);
-}
-
-.lottery__reel-wrap--spinning .lottery__reel-line,
-.lottery__reel-wrap--winner .lottery__reel-line {
-  opacity: 1;
-}
-
-.lottery__reel-line--top {
-  top: 0;
-}
-
-.lottery__reel-line--bottom {
-  bottom: 0;
 }
 
 .lottery__result-head {
