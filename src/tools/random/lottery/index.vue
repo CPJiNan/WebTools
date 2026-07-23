@@ -358,8 +358,16 @@ onBeforeUnmount(() => {
             </div>
           </div>
         </div>
-        <div aria-hidden="true" class="lottery__reel-fade lottery__reel-fade--top"/>
-        <div aria-hidden="true" class="lottery__reel-fade lottery__reel-fade--bottom"/>
+        <div
+          v-if="isSpinning"
+          aria-hidden="true"
+          class="lottery__reel-fade lottery__reel-fade--top"
+        />
+        <div
+          v-if="isSpinning"
+          aria-hidden="true"
+          class="lottery__reel-fade lottery__reel-fade--bottom"
+        />
       </div>
     </div>
 
@@ -732,7 +740,7 @@ onBeforeUnmount(() => {
   top: 0;
   background: linear-gradient(
     180deg,
-    color-mix(in srgb, var(--bg-secondary) 88%, transparent),
+    color-mix(in srgb, var(--bg-secondary) 40%, transparent),
     transparent
   );
 }
@@ -741,7 +749,7 @@ onBeforeUnmount(() => {
   bottom: 0;
   background: linear-gradient(
     0deg,
-    color-mix(in srgb, var(--bg-secondary) 88%, transparent),
+    color-mix(in srgb, var(--bg-secondary) 40%, transparent),
     transparent
   );
 }
@@ -800,11 +808,18 @@ onBeforeUnmount(() => {
   }
 
   .lottery__add-row {
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    gap: 6px;
   }
 
   .lottery__add-row .lottery__option-input--draft {
-    flex: 1 1 100%;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .lottery__add-row .lottery__btn--soft {
+    flex-shrink: 0;
+    padding: 9px 12px;
   }
 }
 </style>
