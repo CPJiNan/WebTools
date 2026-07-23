@@ -241,9 +241,9 @@ function clearResult() {
   font-size: 14px;
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   outline: none;
-  transition: border-color var(--duration-fast) var(--ease-out-soft),
-  box-shadow var(--duration-fast) var(--ease-out-soft),
-  background-color var(--duration-fast) var(--ease-out-soft);
+  transition: border-color var(--duration-fast) var(--ease-out),
+  box-shadow var(--duration-fast) var(--ease-out),
+  background-color var(--duration-fast) var(--ease-out);
   box-sizing: border-box;
 }
 
@@ -291,10 +291,11 @@ function clearResult() {
   background: color-mix(in srgb, var(--bg-secondary) 70%, transparent);
   border: 1px solid var(--surface-border-strong);
   cursor: pointer;
-  transition: background-color var(--duration-fast) var(--ease-out-soft),
-  border-color var(--duration-fast) var(--ease-out-soft),
-  opacity var(--duration-fast) var(--ease-out-soft),
-  box-shadow var(--duration-fast) var(--ease-out-soft);
+  transition: transform var(--duration-press) var(--ease-out),
+  background-color var(--duration-hover) var(--ease-hover),
+  border-color var(--duration-hover) var(--ease-hover),
+  opacity var(--duration-fast) var(--ease-out),
+  box-shadow var(--duration-hover) var(--ease-hover);
 }
 
 .random-number__btn:hover:not(:disabled) {

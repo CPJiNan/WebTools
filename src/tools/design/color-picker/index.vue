@@ -803,9 +803,9 @@ onMounted(() => {
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   text-align: center;
   outline: none;
-  transition: border-color var(--duration-fast) var(--ease-out-soft),
-  box-shadow var(--duration-fast) var(--ease-out-soft),
-  background-color var(--duration-fast) var(--ease-out-soft);
+  transition: border-color var(--duration-fast) var(--ease-out),
+  box-shadow var(--duration-fast) var(--ease-out),
+  background-color var(--duration-fast) var(--ease-out);
   box-sizing: border-box;
   line-height: 36px;
   overflow: visible;
@@ -865,8 +865,9 @@ onMounted(() => {
   cursor: pointer;
   box-shadow: 0 8px 20px color-mix(in srgb, var(--color-primary) 30%, transparent),
   inset 0 1px 0 rgba(255, 255, 255, 0.28);
-  transition: box-shadow var(--duration-fast) var(--ease-out-soft),
-  background-color var(--duration-fast) var(--ease-out-soft);
+  transition: transform var(--duration-press) var(--ease-out),
+  box-shadow var(--duration-hover) var(--ease-hover),
+  background-color var(--duration-hover) var(--ease-hover);
 }
 
 .color-picker__eyedropper:hover {
@@ -894,9 +895,10 @@ onMounted(() => {
   letter-spacing: -0.01em;
   cursor: pointer;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
-  transition: background-color var(--duration-fast) var(--ease-out-soft),
-  border-color var(--duration-fast) var(--ease-out-soft),
-  box-shadow var(--duration-fast) var(--ease-out-soft);
+  transition: transform var(--duration-press) var(--ease-out),
+  background-color var(--duration-hover) var(--ease-hover),
+  border-color var(--duration-hover) var(--ease-hover),
+  box-shadow var(--duration-hover) var(--ease-hover);
 }
 
 [data-theme="dark"] .color-picker__copy {

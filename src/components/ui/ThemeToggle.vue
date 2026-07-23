@@ -55,21 +55,23 @@ const title = computed(() => {
   box-shadow: var(--shadow-sm), inset 0 1px 0 rgba(255, 255, 255, 0.35);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  transition: background-color var(--duration-fast) var(--ease-out-soft),
-  color var(--duration-fast) var(--ease-out-soft),
-  border-color var(--duration-fast) var(--ease-out-soft),
-  box-shadow var(--duration-fast) var(--ease-out-soft);
+  transition: background-color var(--duration-hover) var(--ease-hover),
+  color var(--duration-hover) var(--ease-hover),
+  border-color var(--duration-hover) var(--ease-hover),
+  box-shadow var(--duration-hover) var(--ease-hover);
 }
 
 [data-theme="dark"] .theme-toggle {
   box-shadow: var(--shadow-sm), inset 0 0.5px 0 rgba(255, 255, 255, 0.05);
 }
 
-.theme-toggle:hover {
-  background: color-mix(in srgb, var(--color-primary) 10%, var(--bg-secondary));
-  color: var(--color-primary);
-  border-color: color-mix(in srgb, var(--color-primary) 28%, transparent);
-  box-shadow: var(--shadow-glow);
+@media (hover: hover) and (pointer: fine) {
+  .theme-toggle:hover {
+    background: color-mix(in srgb, var(--color-primary) 10%, var(--bg-secondary));
+    color: var(--color-primary);
+    border-color: color-mix(in srgb, var(--color-primary) 28%, transparent);
+    box-shadow: var(--shadow-glow);
+  }
 }
 
 .theme-toggle__icon {
@@ -80,11 +82,17 @@ const title = computed(() => {
 
 .theme-icon-enter-active,
 .theme-icon-leave-active {
-  transition: opacity var(--duration-fast) var(--ease-out-soft);
+  transition: opacity var(--duration-fast) var(--ease-out),
+  transform var(--duration-fast) var(--ease-out);
 }
 
-.theme-icon-enter-from,
+.theme-icon-enter-from {
+  opacity: 0;
+  transform: scale(0.92) rotate(-8deg);
+}
+
 .theme-icon-leave-to {
   opacity: 0;
+  transform: scale(0.92) rotate(8deg);
 }
 </style>

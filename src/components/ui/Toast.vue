@@ -121,16 +121,24 @@ const toast = useToast()
   white-space: nowrap;
 }
 
-.toast-enter-active,
-.toast-leave-active {
-  transition: transform var(--duration-fast) var(--ease-out-soft),
-  opacity var(--duration-fast) var(--ease-out-soft);
+.toast-enter-active {
+  transition: transform var(--duration-toast) var(--ease-out),
+  opacity var(--duration-toast) var(--ease-out);
 }
 
-.toast-enter-from,
+.toast-leave-active {
+  transition: transform 160ms var(--ease-out),
+  opacity 160ms var(--ease-out);
+}
+
+.toast-enter-from {
+  opacity: 0;
+  transform: translateX(12px) scale(0.96);
+}
+
 .toast-leave-to {
   opacity: 0;
-  transform: translateX(24px) scale(0.95);
+  transform: translateX(8px) scale(0.98);
 }
 
 .toast-enter-to,
@@ -140,7 +148,7 @@ const toast = useToast()
 }
 
 .toast-move {
-  transition: transform var(--duration-fast) var(--ease-out-soft);
+  transition: transform var(--duration-toast) var(--ease-in-out);
 }
 
 @media (max-width: 768px) {
@@ -155,6 +163,14 @@ const toast = useToast()
   .toast {
     width: auto;
     max-width: 100%;
+  }
+
+  .toast-enter-from {
+    transform: translateY(12px) scale(0.96);
+  }
+
+  .toast-leave-to {
+    transform: translateY(8px) scale(0.98);
   }
 }
 </style>

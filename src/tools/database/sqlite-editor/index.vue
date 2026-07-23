@@ -1226,8 +1226,8 @@ function isEditing(rowId: string, col: string) {
   font-size: 13px;
   font-weight: 550;
   color: var(--text-secondary);
-  transition: background-color var(--duration-fast) var(--ease-out-soft),
-  color var(--duration-fast) var(--ease-out-soft);
+  transition: background-color var(--duration-fast) var(--ease-out),
+  color var(--duration-fast) var(--ease-out);
 }
 
 .sqlite__btn {
@@ -1243,9 +1243,10 @@ function isEditing(rowId: string, col: string) {
   color: var(--text-primary);
   background: color-mix(in srgb, var(--bg-secondary) 70%, transparent);
   border: 1px solid var(--surface-border-strong);
-  transition: background-color var(--duration-fast) var(--ease-out-soft),
-  border-color var(--duration-fast) var(--ease-out-soft),
-  opacity var(--duration-fast) var(--ease-out-soft);
+  transition: transform var(--duration-press) var(--ease-out),
+  background-color var(--duration-hover) var(--ease-hover),
+  border-color var(--duration-hover) var(--ease-hover),
+  opacity var(--duration-fast) var(--ease-out);
 }
 
 .sqlite__btn:hover:not(:disabled) {
@@ -1346,7 +1347,7 @@ function isEditing(rowId: string, col: string) {
   font-size: 13px;
   font-weight: 500;
   color: var(--text-primary);
-  transition: background-color var(--duration-fast) var(--ease-out-soft);
+  transition: background-color var(--duration-fast) var(--ease-out);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -1539,8 +1540,8 @@ function isEditing(rowId: string, col: string) {
   color: var(--text-primary);
   font: 13px/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   outline: none;
-  transition: border-color var(--duration-fast) var(--ease-out-soft),
-  box-shadow var(--duration-fast) var(--ease-out-soft);
+  transition: border-color var(--duration-fast) var(--ease-out),
+  box-shadow var(--duration-fast) var(--ease-out);
 }
 
 .sqlite__textarea:focus {

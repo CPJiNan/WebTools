@@ -374,9 +374,9 @@ onBeforeUnmount(() => {
   color: var(--text-primary);
   font-size: 14px;
   outline: none;
-  transition: border-color var(--duration-fast) var(--ease-out-soft),
-  box-shadow var(--duration-fast) var(--ease-out-soft),
-  background-color var(--duration-fast) var(--ease-out-soft);
+  transition: border-color var(--duration-fast) var(--ease-out),
+  box-shadow var(--duration-fast) var(--ease-out),
+  background-color var(--duration-fast) var(--ease-out);
 }
 
 .clock__select:focus {
@@ -398,9 +398,10 @@ onBeforeUnmount(() => {
   background: color-mix(in srgb, var(--bg-secondary) 70%, transparent);
   border: 1px solid var(--surface-border-strong);
   cursor: pointer;
-  transition: background-color var(--duration-fast) var(--ease-out-soft),
-  border-color var(--duration-fast) var(--ease-out-soft),
-  box-shadow var(--duration-fast) var(--ease-out-soft);
+  transition: transform var(--duration-press) var(--ease-out),
+  background-color var(--duration-hover) var(--ease-hover),
+  border-color var(--duration-hover) var(--ease-hover),
+  box-shadow var(--duration-hover) var(--ease-hover);
 }
 
 .clock__btn--primary {
@@ -469,9 +470,10 @@ onBeforeUnmount(() => {
   border: 1px solid var(--surface-border-strong);
   cursor: pointer;
   opacity: 0.7;
-  transition: opacity var(--duration-fast) var(--ease-out-soft),
-  background-color var(--duration-fast) var(--ease-out-soft),
-  color var(--duration-fast) var(--ease-out-soft);
+  transition: transform var(--duration-press) var(--ease-out),
+  opacity var(--duration-fast) var(--ease-out),
+  background-color var(--duration-hover) var(--ease-hover),
+  color var(--duration-hover) var(--ease-hover);
 }
 
 .clock__exit:hover {

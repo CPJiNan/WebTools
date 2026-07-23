@@ -157,14 +157,15 @@ defineProps<Props>()
   text-decoration: none;
   color: inherit;
   display: block;
-  height: 100%;
+  min-width: 0;
 }
 
 .tool-card {
   padding: 22px;
-  height: 100%;
   display: flex;
   flex-direction: column;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .tool-card__icon {
@@ -178,8 +179,8 @@ defineProps<Props>()
   align-items: center;
   justify-content: center;
   margin-bottom: 16px;
-  transition: transform var(--duration-hover) var(--ease-out-soft),
-  border-color var(--duration-fast) var(--ease-out-soft);
+  transition: transform var(--duration-hover) var(--ease-out),
+  border-color var(--duration-hover) var(--ease-hover);
 }
 
 [data-theme="dark"] .tool-card__icon {
@@ -188,7 +189,7 @@ defineProps<Props>()
 
 @media (hover: hover) and (pointer: fine) {
   .tool-card:hover .tool-card__icon {
-    transform: scale(1.05);
+    transform: scale(1.04);
     border-color: color-mix(in srgb, #000 22%, var(--surface-solid));
   }
 
@@ -198,8 +199,8 @@ defineProps<Props>()
 }
 
 .tool-card:active .tool-card__icon {
-  transform: scale(0.98);
-  transition: transform var(--duration-press) ease-out;
+  transform: scale(0.97);
+  transition: transform 80ms var(--ease-out);
 }
 
 .tool-card__icon svg {
@@ -222,10 +223,10 @@ defineProps<Props>()
   margin: 0 0 18px;
   line-height: 1.55;
   letter-spacing: -0.005em;
-  flex: 1;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
   overflow: hidden;
 }
 
@@ -246,15 +247,15 @@ defineProps<Props>()
   color: var(--color-primary);
   background: color-mix(in srgb, var(--color-primary) 8%, transparent);
   border: 1px solid color-mix(in srgb, var(--color-primary) 12%, transparent);
-  transition: background-color var(--duration-fast) var(--ease-out-soft),
-  border-color var(--duration-fast) var(--ease-out-soft),
-  box-shadow var(--duration-fast) var(--ease-out-soft);
+  transition: background-color var(--duration-hover) var(--ease-hover),
+  border-color var(--duration-hover) var(--ease-hover),
+  box-shadow var(--duration-hover) var(--ease-hover);
 }
 
 .tool-card__btn-icon {
   width: 14px;
   height: 14px;
-  transition: transform var(--duration-hover) var(--ease-out-soft);
+  transition: transform var(--duration-hover) var(--ease-out);
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -265,7 +266,7 @@ defineProps<Props>()
   }
 
   .tool-card:hover .tool-card__btn-icon {
-    transform: translateX(3px);
+    transform: translateX(2px);
   }
 }
 </style>

@@ -147,21 +147,25 @@ function handleClose() {
   font-size: 14px;
   font-weight: 500;
   letter-spacing: -0.01em;
-  transition: background-color var(--duration-fast) var(--ease-out-soft),
-  color var(--duration-fast) var(--ease-out-soft),
-  box-shadow var(--duration-fast) var(--ease-out-soft),
-  transform var(--duration-press) ease-out;
+  transition: background-color var(--duration-hover) var(--ease-hover),
+  color var(--duration-hover) var(--ease-hover),
+  box-shadow var(--duration-hover) var(--ease-hover),
+  border-color var(--duration-hover) var(--ease-hover),
+  transform var(--duration-press) var(--ease-out);
   position: relative;
   border: 1px solid transparent;
 }
 
-.sidebar__item:hover {
-  background: color-mix(in srgb, var(--bg-tertiary) 65%, transparent);
-  color: var(--text-primary);
+@media (hover: hover) and (pointer: fine) {
+  .sidebar__item:hover {
+    background: color-mix(in srgb, var(--bg-tertiary) 65%, transparent);
+    color: var(--text-primary);
+  }
 }
 
 .sidebar__item:active {
   transform: scale(0.97);
+  transition-duration: 80ms;
 }
 
 .sidebar__item--active {
@@ -217,20 +221,23 @@ function handleClose() {
   font-size: 14px;
   font-weight: 500;
   border: 1px solid transparent;
-  transition: background-color var(--duration-fast) var(--ease-out-soft),
-  color var(--duration-fast) var(--ease-out-soft),
-  border-color var(--duration-fast) var(--ease-out-soft),
-  transform var(--duration-press) ease-out;
+  transition: background-color var(--duration-hover) var(--ease-hover),
+  color var(--duration-hover) var(--ease-hover),
+  border-color var(--duration-hover) var(--ease-hover),
+  transform var(--duration-press) var(--ease-out);
 }
 
-.sidebar__footer-link:hover {
-  background: color-mix(in srgb, var(--bg-tertiary) 65%, transparent);
-  color: var(--text-primary);
-  border-color: var(--surface-border-strong);
+@media (hover: hover) and (pointer: fine) {
+  .sidebar__footer-link:hover {
+    background: color-mix(in srgb, var(--bg-tertiary) 65%, transparent);
+    color: var(--text-primary);
+    border-color: var(--surface-border-strong);
+  }
 }
 
 .sidebar__footer-link:active {
   transform: scale(0.97);
+  transition-duration: 80ms;
 }
 
 .sidebar__footer-icon {

@@ -147,7 +147,11 @@ function closeSidebar() {
 
       <main class="app-layout__content">
         <div class="app-layout__content-inner">
-          <RouterView/>
+          <RouterView v-slot="{Component, route: viewRoute}">
+            <Transition mode="out-in" name="page">
+              <component :is="Component" :key="viewRoute.path"/>
+            </Transition>
+          </RouterView>
         </div>
       </main>
     </div>
@@ -188,14 +192,22 @@ function closeSidebar() {
   justify-content: center;
   border-radius: var(--radius-md);
   border: 1px solid transparent;
-  transition: background-color var(--duration-fast) var(--ease-out-soft),
-  border-color var(--duration-fast) var(--ease-out-soft),
-  box-shadow var(--duration-fast) var(--ease-out-soft);
+  transition: background-color var(--duration-hover) var(--ease-hover),
+  border-color var(--duration-hover) var(--ease-hover),
+  box-shadow var(--duration-hover) var(--ease-hover),
+  transform var(--duration-press) var(--ease-out);
 }
 
-.app-layout__menu-btn:hover {
-  background: color-mix(in srgb, var(--bg-tertiary) 80%, transparent);
-  border-color: var(--surface-border-strong);
+@media (hover: hover) and (pointer: fine) {
+  .app-layout__menu-btn:hover {
+    background: color-mix(in srgb, var(--bg-tertiary) 80%, transparent);
+    border-color: var(--surface-border-strong);
+  }
+}
+
+.app-layout__menu-btn:active {
+  transform: scale(0.97);
+  transition-duration: 80ms;
 }
 
 .app-layout__menu-btn svg {
@@ -230,9 +242,12 @@ function closeSidebar() {
   z-index: 150;
 }
 
-.overlay-enter-active,
+.overlay-enter-active {
+  transition: opacity var(--duration-sheet) var(--ease-out);
+}
+
 .overlay-leave-active {
-  transition: opacity var(--duration-sheet) var(--ease-out-soft);
+  transition: opacity 220ms var(--ease-out);
 }
 
 .overlay-enter-from,
@@ -243,6 +258,26 @@ function closeSidebar() {
 .overlay-enter-to,
 .overlay-leave-from {
   opacity: 1;
+}
+
+.page-enter-active {
+  transition: opacity var(--duration-page) var(--ease-out),
+  transform var(--duration-page) var(--ease-out);
+}
+
+.page-leave-active {
+  transition: opacity 140ms var(--ease-out),
+  transform 140ms var(--ease-out);
+}
+
+.page-enter-from {
+  opacity: 0;
+  transform: translateY(8px) scale(0.985);
+}
+
+.page-leave-to {
+  opacity: 0;
+  transform: translateY(-4px) scale(0.995);
 }
 
 .app-layout__main {
@@ -307,7 +342,7 @@ function closeSidebar() {
   height: 17px;
   color: var(--text-secondary);
   pointer-events: none;
-  transition: color var(--duration-fast) var(--ease-out-soft);
+  transition: color var(--duration-hover) var(--ease-hover);
   z-index: 1;
 }
 
@@ -330,9 +365,9 @@ function closeSidebar() {
   letter-spacing: -0.01em;
   outline: none;
   box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.04);
-  transition: border-color var(--duration-fast) var(--ease-out-soft),
-  box-shadow var(--duration-fast) var(--ease-out-soft),
-  background-color var(--duration-fast) var(--ease-out-soft);
+  transition: border-color var(--duration-fast) var(--ease-hover),
+  box-shadow var(--duration-fast) var(--ease-hover),
+  background-color var(--duration-fast) var(--ease-hover);
   -webkit-appearance: none;
   appearance: none;
 }
@@ -355,8 +390,8 @@ function closeSidebar() {
   box-sizing: border-box;
   -webkit-appearance: none;
   appearance: none;
-  transition: border-color var(--duration-fast) var(--ease-out-soft),
-  box-shadow var(--duration-fast) var(--ease-out-soft);
+  transition: border-color var(--duration-fast) var(--ease-hover),
+  box-shadow var(--duration-fast) var(--ease-hover);
 }
 
 .app-layout__mobile-search-input::-webkit-search-decoration,
@@ -409,8 +444,10 @@ function closeSidebar() {
   height: 12px;
 }
 
-.app-layout__search-clear:hover {
-  color: var(--text-primary);
+@media (hover: hover) and (pointer: fine) {
+  .app-layout__search-clear:hover {
+    color: var(--text-primary);
+  }
 }
 
 .app-layout__content {

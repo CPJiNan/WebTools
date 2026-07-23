@@ -97,6 +97,48 @@ const groupedTools = computed(() => {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  min-width: 0;
+  animation: home-section-in var(--duration-page) var(--ease-out) both;
+}
+
+.home__section:nth-child(1) {
+  animation-delay: 0ms;
+}
+
+.home__section:nth-child(2) {
+  animation-delay: calc(var(--stagger-step) * 1);
+}
+
+.home__section:nth-child(3) {
+  animation-delay: calc(var(--stagger-step) * 2);
+}
+
+.home__section:nth-child(4) {
+  animation-delay: calc(var(--stagger-step) * 3);
+}
+
+.home__section:nth-child(5) {
+  animation-delay: calc(var(--stagger-step) * 4);
+}
+
+.home__section:nth-child(6) {
+  animation-delay: calc(var(--stagger-step) * 5);
+}
+
+.home__section:nth-child(n + 7) {
+  animation-delay: calc(var(--stagger-step) * 6);
+}
+
+@keyframes home-section-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .home__section-head {
@@ -140,8 +182,10 @@ const groupedTools = computed(() => {
 
 .home__tools-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
   gap: 16px;
+  min-width: 0;
+  align-items: start;
 }
 
 .home__empty {

@@ -71,11 +71,13 @@ const tools = computed(() => getToolsByCategory(categoryId.value))
 .category-view__breadcrumb-link {
   color: var(--text-muted);
   text-decoration: none;
-  transition: color var(--duration-fast) var(--ease-out-soft);
+  transition: color var(--duration-hover) var(--ease-hover);
 }
 
-.category-view__breadcrumb-link:hover {
-  color: var(--color-primary);
+@media (hover: hover) and (pointer: fine) {
+  .category-view__breadcrumb-link:hover {
+    color: var(--color-primary);
+  }
 }
 
 .category-view__breadcrumb-sep {
@@ -90,8 +92,10 @@ const tools = computed(() => getToolsByCategory(categoryId.value))
 
 .category-view__grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
   gap: 16px;
+  min-width: 0;
+  align-items: start;
 }
 
 .category-view__empty {

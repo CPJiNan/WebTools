@@ -232,11 +232,13 @@ watch(
 .tool-view__breadcrumb-link {
   color: var(--text-muted);
   text-decoration: none;
-  transition: color var(--duration-fast) var(--ease-out-soft);
+  transition: color var(--duration-hover) var(--ease-hover);
 }
 
-.tool-view__breadcrumb-link:hover {
-  color: var(--color-primary);
+@media (hover: hover) and (pointer: fine) {
+  .tool-view__breadcrumb-link:hover {
+    color: var(--color-primary);
+  }
 }
 
 .tool-view__breadcrumb-sep {
@@ -371,15 +373,22 @@ watch(
   text-decoration: none;
   box-shadow: 0 8px 20px color-mix(in srgb, var(--color-primary) 30%, transparent),
   inset 0 1px 0 rgba(255, 255, 255, 0.28);
-  transition: transform var(--duration-press) ease-out,
-  box-shadow var(--duration-fast) var(--ease-out-soft),
-  background-color var(--duration-fast) var(--ease-out-soft);
+  transition: transform var(--duration-press) var(--ease-out),
+  box-shadow var(--duration-hover) var(--ease-hover),
+  background-color var(--duration-hover) var(--ease-hover);
 }
 
-.tool-view__not-found-btn:hover {
-  color: white;
-  background: var(--color-primary-hover);
-  box-shadow: 0 12px 28px color-mix(in srgb, var(--color-primary) 36%, transparent),
-  inset 0 1px 0 rgba(255, 255, 255, 0.32);
+.tool-view__not-found-btn:active {
+  transform: scale(0.97);
+  transition-duration: 80ms;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .tool-view__not-found-btn:hover {
+    color: white;
+    background: var(--color-primary-hover);
+    box-shadow: 0 12px 28px color-mix(in srgb, var(--color-primary) 36%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, 0.32);
+  }
 }
 </style>
