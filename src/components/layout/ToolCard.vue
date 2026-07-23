@@ -58,6 +58,20 @@ defineProps<Props>()
           <circle cx="12" cy="12" fill="currentColor" r=".5"/>
         </svg>
         <svg
+          v-else-if="tool.icon === 'lottery'"
+          fill="none"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="1.75"
+          viewBox="0 0 24 24"
+        >
+          <path d="M0 0h24v24H0z" fill="none" stroke="none"/>
+          <path d="M8 4h8a2 2 0 0 1 2 2v14l-3 -2l-3 2l-3 -2l-3 2v-14a2 2 0 0 1 2 -2"/>
+          <path d="M12 8v4"/>
+          <path d="M10 10h4"/>
+        </svg>
+        <svg
           v-else-if="tool.icon === 'clock'"
           fill="none"
           stroke="currentColor"
@@ -187,8 +201,9 @@ defineProps<Props>()
 .tool-card-link {
   text-decoration: none;
   color: inherit;
-  display: block;
+  display: flex;
   min-width: 0;
+  height: 100%;
 }
 
 .tool-card {
@@ -196,6 +211,7 @@ defineProps<Props>()
   display: flex;
   flex-direction: column;
   width: 100%;
+  height: 100%;
   box-sizing: border-box;
 }
 
@@ -265,6 +281,7 @@ defineProps<Props>()
 .tool-card__footer {
   display: flex;
   justify-content: flex-end;
+  margin-top: auto;
 }
 
 .tool-card__btn {

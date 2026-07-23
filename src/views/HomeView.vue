@@ -185,7 +185,7 @@ const groupedTools = computed(() => {
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
   gap: 16px;
   min-width: 0;
-  align-items: start;
+  align-items: stretch;
 }
 
 .home__empty {
