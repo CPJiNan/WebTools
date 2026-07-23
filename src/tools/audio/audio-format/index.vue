@@ -145,10 +145,6 @@ const bitrateOptions: { value: BitrateMode; label: string }[] = [
   })),
 ]
 
-const bitrateLabel = computed(() => {
-  if (bitrateMode.value === 'keep') return '原比特率'
-  return `${bitrateMode.value} kbps`
-})
 
 const sampleRateOptions: { value: SampleRateMode; label: string }[] = [
   {value: 'keep', label: '原采样率'},
@@ -785,10 +781,7 @@ onBeforeUnmount(() => {
         </label>
 
         <label v-if="showBitrate" class="audio-format__field">
-          <span class="audio-format__label">
-            比特率
-            <span class="audio-format__label-value">{{ bitrateLabel }}</span>
-          </span>
+          <span class="audio-format__label">比特率</span>
           <select v-model="bitrateMode" class="audio-format__select">
             <option
               v-for="option in bitrateOptions"
@@ -1071,13 +1064,6 @@ onBeforeUnmount(() => {
   color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.07em;
-}
-
-.audio-format__label-value {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  color: var(--color-primary);
-  letter-spacing: 0;
-  text-transform: none;
 }
 
 .audio-format__select {
