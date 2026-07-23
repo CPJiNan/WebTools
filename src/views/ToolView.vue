@@ -277,7 +277,8 @@ watch(
   height: 52px;
   border-radius: var(--radius-lg);
   background: transparent;
-  border: 1px solid color-mix(in srgb, #000 14%, var(--surface-solid));
+  border: none;
+  box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.14);
   color: var(--color-primary);
   display: flex;
   align-items: center;
@@ -286,7 +287,7 @@ watch(
 }
 
 [data-theme="dark"] .tool-view__icon {
-  border-color: color-mix(in srgb, #fff 14%, var(--surface-solid));
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14);
 }
 
 .tool-view__icon svg {

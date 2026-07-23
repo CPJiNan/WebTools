@@ -173,28 +173,29 @@ defineProps<Props>()
   height: 48px;
   border-radius: var(--radius-md);
   background: transparent;
-  border: 1px solid color-mix(in srgb, #000 14%, var(--surface-solid));
+  border: none;
+  box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.14);
   color: var(--color-primary);
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 16px;
   transition: transform var(--duration-hover) var(--ease-out),
-  border-color var(--duration-hover) var(--ease-hover);
+  box-shadow var(--duration-hover) var(--ease-hover);
 }
 
 [data-theme="dark"] .tool-card__icon {
-  border-color: color-mix(in srgb, #fff 14%, var(--surface-solid));
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14);
 }
 
 @media (hover: hover) and (pointer: fine) {
   .tool-card:hover .tool-card__icon {
     transform: scale(1.04);
-    border-color: color-mix(in srgb, #000 22%, var(--surface-solid));
+    box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.22);
   }
 
   [data-theme="dark"] .tool-card:hover .tool-card__icon {
-    border-color: color-mix(in srgb, #fff 22%, var(--surface-solid));
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22);
   }
 }
 
