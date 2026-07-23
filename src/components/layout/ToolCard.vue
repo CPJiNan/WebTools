@@ -133,6 +133,21 @@ defineProps<Props>()
           <path d="M22 19l-3 -3l-3 3"/>
         </svg>
         <svg
+          v-else-if="tool.icon === 'video-format'"
+          fill="none"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="1.75"
+          viewBox="0 0 24 24"
+        >
+          <path d="M0 0h24v24H0z" fill="none" stroke="none"/>
+          <path d="M12.5 21h-6.5a3 3 0 0 1 -3 -3v-10a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v5"/>
+          <path d="M10.5 10.5l5 2.5l-5 2.5z"/>
+          <path d="M19 22v-6"/>
+          <path d="M22 19l-3 -3l-3 3"/>
+        </svg>
+        <svg
           v-else
           fill="none"
           stroke="currentColor"

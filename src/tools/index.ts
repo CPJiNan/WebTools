@@ -66,6 +66,15 @@ export const tools: Tool[] = [
     component: () => import('./audio/audio-format/index.vue'),
   },
   {
+    id: 'video-format',
+    categoryId: 'video',
+    name: '视频格式转换',
+    description: '将视频转换为 WebM、MP4 等格式，支持调整分辨率与比特率。',
+    icon: 'video-format',
+    tags: ['视频格式转换', 'WebM', 'MP4'],
+    component: () => import('./video/video-format/index.vue'),
+  },
+  {
     id: 'sqlite-editor',
     categoryId: 'database',
     name: 'SQLite 编辑器',
