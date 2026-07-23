@@ -153,6 +153,22 @@ watch(
               <path d="M22 19l-3 -3l-3 3"/>
             </svg>
             <svg
+              v-else-if="tool.icon === 'audio-format'"
+              fill="none"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1.75"
+              viewBox="0 0 24 24"
+            >
+              <path d="M0 0h24v24H0z" fill="none" stroke="none"/>
+              <path d="M3 17a3 3 0 1 0 6 0a3 3 0 0 0 -6 0"/>
+              <path d="M9 17v-13h10v6"/>
+              <path d="M9 8h10"/>
+              <path d="M19 22v-6"/>
+              <path d="M22 19l-3 -3l-3 3"/>
+            </svg>
+            <svg
               v-else
               fill="none"
               stroke="currentColor"

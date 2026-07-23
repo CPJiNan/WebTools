@@ -18,6 +18,10 @@ export const categories: ToolCategory[] = [
     name: '图片',
   },
   {
+    id: 'audio',
+    name: '音频',
+  },
+  {
     id: 'database',
     name: '数据库',
   },
