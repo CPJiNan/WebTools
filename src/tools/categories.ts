@@ -10,6 +10,10 @@ export const categories: ToolCategory[] = [
     name: '随机',
   },
   {
+    id: 'text',
+    name: '文本',
+  },
+  {
     id: 'design',
     name: '设计',
   },

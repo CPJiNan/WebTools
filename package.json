@@ -12,6 +12,7 @@
     "typecheck": "vue-tsc --noEmit"
   },
   "dependencies": {
+    "figlet": "^1.11.3",
     "lamejs": "^1.2.1",
     "pinia": "^3.0.4",
     "sql.js": "^1.14.1",
@@ -21,6 +22,7 @@
   "devDependencies": {
     "@tailwindcss/vite": "^4.3.0",
     "@tsconfig/node24": "^24.0.4",
+    "@types/figlet": "^1.7.0",
     "@types/node": "^25.8.0",
     "@types/sql.js": "^1.4.11",
     "@vitejs/plugin-vue": "^6.0.7",

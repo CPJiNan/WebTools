@@ -48,6 +48,15 @@ export const tools: Tool[] = [
     component: () => import('./random/lottery/index.vue'),
   },
   {
+    id: 'ascii-art',
+    categoryId: 'text',
+    name: 'ASCII 艺术字',
+    description: '将文本转换为字符画。',
+    icon: 'ascii-art',
+    tags: ['ASCII', '艺术字', '字符画'],
+    component: () => import('./text/ascii-art/index.vue'),
+  },
+  {
     id: 'color-picker',
     categoryId: 'design',
     name: '取色器',
