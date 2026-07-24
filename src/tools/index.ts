@@ -66,6 +66,15 @@ export const tools: Tool[] = [
     component: () => import('./design/color-picker/index.vue'),
   },
   {
+    id: 'gradient-generator',
+    categoryId: 'design',
+    name: '渐变色生成器',
+    description: '随机生成颜色渐变。',
+    icon: 'gradient-generator',
+    tags: ['渐变色'],
+    component: () => import('./design/gradient-generator/index.vue'),
+  },
+  {
     id: 'image-format',
     categoryId: 'image',
     name: '图片格式转换',

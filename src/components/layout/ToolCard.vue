@@ -28,6 +28,21 @@ defineProps<Props>()
           <path d="M4 16l11.7 -11.7a1 1 0 0 1 1.4 0l2.6 2.6a1 1 0 0 1 0 1.4l-11.7 11.7h-4v-4"/>
         </svg>
         <svg
+          v-else-if="tool.icon === 'gradient-generator'"
+          fill="none"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="1.75"
+          viewBox="0 0 24 24"
+        >
+          <path d="M0 0h24v24H0z" fill="none" stroke="none"/>
+          <path d="M4 4m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z"/>
+          <path d="M4 10h16"/>
+          <path d="M4 15h16"/>
+          <path d="M10 4v16"/>
+        </svg>
+        <svg
           v-else-if="tool.icon === 'sqlite-editor'"
           fill="none"
           stroke="currentColor"
