@@ -244,8 +244,7 @@ defineProps<Props>()
   align-items: center;
   justify-content: center;
   margin-bottom: 16px;
-  transition: transform var(--duration-hover) var(--ease-out),
-  box-shadow var(--duration-hover) var(--ease-hover);
+  transition: box-shadow var(--duration-hover) var(--ease-hover);
 }
 
 [data-theme="dark"] .tool-card__icon {
@@ -254,18 +253,12 @@ defineProps<Props>()
 
 @media (hover: hover) and (pointer: fine) {
   .tool-card:hover .tool-card__icon {
-    transform: scale(1.04);
     box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.22);
   }
 
   [data-theme="dark"] .tool-card:hover .tool-card__icon {
     box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22);
   }
-}
-
-.tool-card:active .tool-card__icon {
-  transform: scale(0.97);
-  transition: transform 80ms var(--ease-out);
 }
 
 .tool-card__icon svg {
