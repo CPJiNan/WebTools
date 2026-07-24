@@ -17,7 +17,6 @@ interface GradientItem {
   height: number
 }
 
-const BATCH_SIZE = 24
 const gradients = ref<GradientItem[]>([])
 const selectedId = ref<string | null>(null)
 const draft = ref<GradientItem | null>(null)
@@ -42,33 +41,16 @@ function randomInt(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1)) + min
 }
 
-function vividHex(h: number): string {
-  const s = randomInt(65, 85)
-  const l = randomInt(65, 85)
-  return hslToHex(h, s, l)
-}
-
-function randomVividHex(): string {
-  return vividHex(randomInt(0, 359))
-}
-
-function randomColorPair(): [string, string] {
-  const h1 = randomInt(0, 359)
-  const offset = Math.random() > 0.1 ? randomInt(15, 60) : randomInt(120, 240)
-  const h2 = (h1 + offset) % 360
-  return [vividHex(h1), vividHex(h2)]
-}
-
-function hslToHex(h: number, s: number, l: number): string {
+function hsbToHex(h: number, s: number, b: number): string {
   const sNorm = s / 100
-  const lNorm = l / 100
-  const c = (1 - Math.abs(2 * lNorm - 1)) * sNorm
+  const bNorm = b / 100
+  const c = bNorm * sNorm
   const x = c * (1 - Math.abs(((h / 60) % 2) - 1))
-  const m = lNorm - c / 2
+  const m = bNorm - c
 
   let r = 0
   let g = 0
-  let b = 0
+  let b_ = 0
 
   if (h < 60) {
     r = c
@@ -78,16 +60,16 @@ function hslToHex(h: number, s: number, l: number): string {
     g = c
   } else if (h < 180) {
     g = c
-    b = x
+    b_ = x
   } else if (h < 240) {
     g = x
-    b = c
+    b_ = c
   } else if (h < 300) {
     r = x
-    b = c
+    b_ = c
   } else {
     r = c
-    b = x
+    b_ = x
   }
 
   const toHex = (n: number) =>
@@ -95,7 +77,26 @@ function hslToHex(h: number, s: number, l: number): string {
       .toString(16)
       .padStart(2, '0')
 
-  return `#${toHex(r)}${toHex(g)}${toHex(b)}`
+  return `#${toHex(r)}${toHex(g)}${toHex(b_)}`
+}
+
+function softHex(h: number, s: number): string {
+  return hsbToHex(h, s, 100)
+}
+
+function randomSoftHex(): string {
+  const h = randomInt(0, 359)
+  const s = randomInt(20, 40)
+  return softHex(h, s)
+}
+
+function randomColorPair(): [string, string] {
+  const h1 = randomInt(0, 359)
+  const s1 = randomInt(20, 40)
+  const offset = randomInt(15, 45)
+  const h2 = (h1 + offset) % 360
+  const s2 = randomInt(20, 40)
+  return [softHex(h1, s1), softHex(h2, s2)]
 }
 
 function normalizeHex(raw: string): string | null {
@@ -133,7 +134,7 @@ function toCss(item: GradientItem): string {
   return `linear-gradient(${item.angle}deg, ${stops})`
 }
 
-function generateBatch(count = BATCH_SIZE): GradientItem[] {
+function generateBatch(count = 24): GradientItem[] {
   return Array.from({length: count}, () => createRandomGradient())
 }
 
@@ -222,7 +223,7 @@ function addStop() {
   if (!draft.value) return
   draft.value.stops.push({
     id: nextId('stop'),
-    color: randomVividHex(),
+    color: randomSoftHex(),
     position: 50,
   })
   draft.value.stops.sort((a, b) => a.position - b.position)
