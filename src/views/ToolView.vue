@@ -227,6 +227,20 @@ watch(
               <path d="M16 4l5 8l-5 8"/>
             </svg>
             <svg
+              v-else-if="tool.icon === 'spin-wheel'"
+              fill="none"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1.75"
+              viewBox="0 0 24 24"
+            >
+              <path d="M0 0h24v24H0z" fill="none" stroke="none"/>
+              <circle cx="12" cy="12" r="9"/>
+              <path d="M12 3v9l7.5 4.5"/>
+              <line x1="12" x2="12" y1="3" y2="12"/>
+            </svg>
+            <svg
               v-else-if="tool.icon === 'ascii-art'"
               fill="none"
               stroke="currentColor"

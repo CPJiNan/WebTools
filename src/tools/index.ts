@@ -48,6 +48,15 @@ export const tools: Tool[] = [
     component: () => import('./random/lottery/index.vue'),
   },
   {
+    id: 'spin-wheel',
+    categoryId: 'random',
+    name: '转盘',
+    description: '自定义选项的转盘抽奖。',
+    icon: 'spin-wheel',
+    tags: ['转盘', '抽奖', '随机'],
+    component: () => import('./random/spin-wheel/index.vue'),
+  },
+  {
     id: 'ascii-art',
     categoryId: 'text',
     name: 'ASCII 艺术字',
