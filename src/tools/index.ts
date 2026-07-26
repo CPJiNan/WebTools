@@ -57,6 +57,15 @@ export const tools: Tool[] = [
     component: () => import('./text/ascii-art/index.vue'),
   },
   {
+    id: 'unicode-converter',
+    categoryId: 'text',
+    name: 'Unicode 编码转换',
+    description: '将文本与 Unicode 编码相互转换。',
+    icon: 'unicode-converter',
+    tags: ['Unicode', '编码'],
+    component: () => import('./text/unicode-converter/index.vue'),
+  },
+  {
     id: 'color-picker',
     categoryId: 'design',
     name: '取色器',
