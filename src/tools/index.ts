@@ -51,9 +51,9 @@ export const tools: Tool[] = [
     id: 'spin-wheel',
     categoryId: 'random',
     name: '转盘',
-    description: '自定义选项的转盘抽奖。',
+    description: '从自定义选项中按权重抽取。',
     icon: 'spin-wheel',
-    tags: ['转盘', '抽奖', '随机'],
+    tags: ['转盘', '抽奖'],
     component: () => import('./random/spin-wheel/index.vue'),
   },
   {

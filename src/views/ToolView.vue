@@ -119,9 +119,12 @@ watch(
               viewBox="0 0 24 24"
             >
               <path d="M0 0h24v24H0z" fill="none" stroke="none"/>
-              <path d="M8 4h8a2 2 0 0 1 2 2v14l-3 -2l-3 2l-3 -2l-3 2v-14a2 2 0 0 1 2 -2"/>
-              <path d="M12 8v4"/>
-              <path d="M10 10h4"/>
+              <rect height="16" rx="2" width="16" x="4" y="4"/>
+              <circle cx="8.5" cy="8.5" fill="currentColor" r=".5"/>
+              <circle cx="15.5" cy="8.5" fill="currentColor" r=".5"/>
+              <circle cx="15.5" cy="15.5" fill="currentColor" r=".5"/>
+              <circle cx="8.5" cy="15.5" fill="currentColor" r=".5"/>
+              <circle cx="12" cy="12" fill="currentColor" r=".5"/>
             </svg>
             <svg
               v-else-if="tool.icon === 'clock'"
@@ -236,9 +239,12 @@ watch(
               viewBox="0 0 24 24"
             >
               <path d="M0 0h24v24H0z" fill="none" stroke="none"/>
-              <circle cx="12" cy="12" r="9"/>
-              <path d="M12 3v9l7.5 4.5"/>
-              <line x1="12" x2="12" y1="3" y2="12"/>
+              <rect height="16" rx="2" width="16" x="4" y="4"/>
+              <circle cx="8.5" cy="8.5" fill="currentColor" r=".5"/>
+              <circle cx="15.5" cy="8.5" fill="currentColor" r=".5"/>
+              <circle cx="15.5" cy="15.5" fill="currentColor" r=".5"/>
+              <circle cx="8.5" cy="15.5" fill="currentColor" r=".5"/>
+              <circle cx="12" cy="12" fill="currentColor" r=".5"/>
             </svg>
             <svg
               v-else-if="tool.icon === 'ascii-art'"
