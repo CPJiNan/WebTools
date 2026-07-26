@@ -5,6 +5,7 @@ interface Option {
   id: number
   label: string
   color: string
+  weight: number
 }
 
 const PALETTE = [
@@ -15,10 +16,10 @@ const PALETTE = [
 
 let nextId = 5
 const options = ref<Option[]>([
-  {id: 1, label: '选项 A', color: PALETTE[0]},
-  {id: 2, label: '选项 B', color: PALETTE[1]},
-  {id: 3, label: '选项 C', color: PALETTE[2]},
-  {id: 4, label: '选项 D', color: PALETTE[3]},
+  {id: 1, label: '选项 A', color: PALETTE[0], weight: 1},
+  {id: 2, label: '选项 B', color: PALETTE[1], weight: 1},
+  {id: 3, label: '选项 C', color: PALETTE[2], weight: 1},
+  {id: 4, label: '选项 D', color: PALETTE[3], weight: 1},
 ])
 
 const spinning = ref(false)
@@ -29,6 +30,7 @@ const history = ref<Array<{label: string; color: string}>>([])
 const showResultPanel = ref(false)
 const speakEnabled = ref(true)
 const errorMessage = ref('')
+const showWeights = ref(false)
 
 const hasOptions = computed(() => options.value.length >= 2)
 
@@ -39,6 +41,7 @@ const segments = computed(() => {
   const radius = 160
   const cx = 200
   const cy = 200
+
   return options.value.map((opt, i) => {
     const startAngle = (i * angle * Math.PI) / 180 - Math.PI / 2
     const endAngle = ((i + 1) * angle * Math.PI) / 180 - Math.PI / 2
@@ -64,7 +67,7 @@ const segments = computed(() => {
 function addOption() {
   if (options.value.length >= 24) { errorMessage.value = '最多支持 24 个选项'; return }
   const idx = options.value.length % PALETTE.length
-  options.value.push({id: nextId++, label: '', color: PALETTE[idx]})
+  options.value.push({id: nextId++, label: '', color: PALETTE[idx], weight: 1})
   errorMessage.value = ''
 }
 
@@ -74,35 +77,61 @@ function removeOption(id: number) {
   errorMessage.value = ''
 }
 
-function updateOption(id: number, field: 'label' | 'color', value: string) {
+function updateLabel(id: number, value: string) {
   const opt = options.value.find((o) => o.id === id)
-  if (opt) { if (field === 'label') opt.label = value; else opt.color = value }
+  if (opt) opt.label = value
+}
+
+function cycleColor(id: number) {
+  const opt = options.value.find((o) => o.id === id)
+  if (opt) opt.color = PALETTE[(PALETTE.indexOf(opt.color) + 1) % PALETTE.length]
+}
+
+function updateWeight(id: number, value: string) {
+  const opt = options.value.find((o) => o.id === id)
+  if (!opt) return
+  const n = parseInt(value, 10)
+  opt.weight = Number.isFinite(n) && n >= 1 ? n : 1
 }
 
 function spin() {
   const labels = options.value.map((o) => o.label.trim()).filter(Boolean)
   if (labels.length < 2) { errorMessage.value = '至少需要 2 个有效选项'; return }
   if (spinning.value) return
+
+  // 加权随机确定赢家
+  const totalW = options.value.reduce((s, o) => s + Math.max(1, o.weight), 0)
+  const rand = Math.random() * totalW
+  let acc = 0
+  let index = 0
+  for (let i = 0; i < options.value.length; i++) {
+    acc += Math.max(1, options.value[i].weight)
+    if (rand < acc) { index = i; break }
+  }
+
   spinning.value = true
   result.value = null
   showResultPanel.value = true
+
+  // 计算旋转角度使指针精确指向赢家扇区
+  const segAngle = 360 / options.value.length
+  const winCenter = 360 - (index + 0.5) * segAngle
   const extraRounds = (5 + Math.floor(Math.random() * 6)) * 360
-  const targetRotation = extraRounds + Math.random() * 360
+  const targetRotation = extraRounds + winCenter
   wheelRotation.value = targetRotation
+
   setTimeout(() => {
     spinning.value = false
-    const normalized = (360 - (targetRotation % 360)) % 360
-    const index = Math.floor(normalized / segmentAngle.value) % options.value.length
     const winner = options.value[index]
     const label = winner.label.trim() || '(空)'
     result.value = label
     resultColor.value = winner.color
     history.value = [{label, color: winner.color}, ...history.value].slice(0, 12)
+
     if (speakEnabled.value) {
-      const utterance = new SpeechSynthesisUtterance(label)
-      utterance.lang = 'zh-CN'
-      utterance.rate = 0.9
-      speechSynthesis.speak(utterance)
+      const u = new SpeechSynthesisUtterance(label)
+      u.lang = 'zh-CN'; u.rate = 0.9
+      speechSynthesis.speak(u)
     }
     wheelRotation.value = targetRotation % 360
   }, 4200)
@@ -119,32 +148,25 @@ function clearHistory() { history.value = [] }
       <div class="spin-wheel__option-list">
         <div v-for="(opt, index) in options" :key="opt.id" class="spin-wheel__option-row">
           <span class="spin-wheel__option-index">{{ index + 1 }}</span>
-          <!-- 颜色圆点：点击循环切换 -->
-          <button
-            class="spin-wheel__color-badge pressable"
-            :style="{ background: opt.color }"
-            type="button"
-            :title="'当前颜色: ' + opt.color + ' — 点击切换'"
-            @click="updateOption(opt.id, 'color', PALETTE[(PALETTE.indexOf(opt.color) + 1) % PALETTE.length])"
-          />
-          <input
-            :disabled="spinning" :value="opt.label"
-            class="spin-wheel__option-input" placeholder="输入选项名称"
-            spellcheck="false" type="text"
-            @input="updateOption(opt.id, 'label', ($event.target as HTMLInputElement).value)"
-          />
-          <button
-            :disabled="spinning || options.length <= 2"
+          <button class="spin-wheel__color-badge pressable" :style="{ background: opt.color }"
+            type="button" @click="cycleColor(opt.id)"
+            :title="'当前颜色: ' + opt.color + ' — 点击切换'" />
+          <input :disabled="spinning" :value="opt.label"
+            class="spin-wheel__option-input" placeholder="名称" spellcheck="false" type="text"
+            @input="updateLabel(opt.id, ($event.target as HTMLInputElement).value)" />
+          <button :disabled="spinning || options.length <= 2"
             class="spin-wheel__option-remove pressable" title="删除" type="button"
-            @click="removeOption(opt.id)"
-          >
+            @click="removeOption(opt.id)">
             <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
               <path d="M18 6L6 18"/><path d="M6 6l12 12"/>
             </svg>
           </button>
         </div>
       </div>
-      <button :disabled="spinning" class="spin-wheel__add-btn pressable" type="button" @click="addOption">添加选项</button>
+      <div class="spin-wheel__actions">
+        <button :disabled="spinning" class="spin-wheel__add-btn pressable" type="button" @click="addOption">添加选项</button>
+        <button class="spin-wheel__weight-btn pressable" type="button" @click="showWeights = true">权重设置</button>
+      </div>
       <label class="spin-wheel__speak-toggle">
         <input v-model="speakEnabled" type="checkbox" />
         <span>语音播报结果</span>
@@ -160,10 +182,8 @@ function clearHistory() { history.value = [] }
         </svg>
       </div>
       <div class="spin-wheel__wheel-wrap">
-        <svg
-          :style="{ transform: 'rotate(' + wheelRotation + 'deg)', transition: spinning ? 'transform 4s cubic-bezier(0.15, 0.7, 0.1, 1)' : 'none' }"
-          class="spin-wheel__wheel" viewBox="0 0 400 400"
-        >
+        <svg :style="{ transform: 'rotate(' + wheelRotation + 'deg)', transition: spinning ? 'transform 4s cubic-bezier(0.15, 0.7, 0.1, 1)' : 'none' }"
+          class="spin-wheel__wheel" viewBox="0 0 400 400">
           <circle cx="200" cy="200" fill="none" r="166" stroke="var(--surface-border-strong)" stroke-width="4"/>
           <g v-for="seg in segments" :key="seg.id">
             <path :d="seg.path" :fill="seg.color"/>
@@ -182,7 +202,7 @@ function clearHistory() { history.value = [] }
 
     <!-- 结果 -->
     <div v-if="showResultPanel" class="spin-wheel__result-panel">
-      <span class="spin-wheel__section-title">转盘结果</span>
+      <span class="spin-wheel__section-title">抽奖结果</span>
       <div v-if="result" class="spin-wheel__result-value" :style="{ color: resultColor }">{{ result }}</div>
       <div v-else class="spin-wheel__result-placeholder">旋转中...</div>
     </div>
@@ -194,9 +214,37 @@ function clearHistory() { history.value = [] }
         <button class="spin-wheel__ghost-btn pressable" type="button" @click="clearHistory">清空</button>
       </div>
       <div class="spin-wheel__history-list">
-        <span v-for="(item, idx) in history" :key="idx" class="spin-wheel__chip" :style="{ borderColor: item.color, color: item.color }">{{ item.label }}</span>
+        <span v-for="(item, idx) in history" :key="idx" class="spin-wheel__chip"
+          :style="{ borderColor: item.color, color: item.color }">{{ item.label }}</span>
       </div>
     </div>
+
+    <!-- 权重弹窗 -->
+    <Teleport to="body">
+      <Transition name="modal">
+        <div v-if="showWeights" class="spin-wheel__modal-overlay" @click.self="showWeights = false">
+          <div class="spin-wheel__modal glass-elevated">
+            <div class="spin-wheel__modal-head">
+              <span class="spin-wheel__modal-title">权重设置</span>
+              <button class="spin-wheel__modal-close pressable" type="button" @click="showWeights = false">
+                <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M18 6L6 18M6 6l12 12"/>
+                </svg>
+              </button>
+            </div>
+            <p class="spin-wheel__modal-desc">权重越高，抽中概率越大。所有权重之和不用等于特定值。</p>
+            <div class="spin-wheel__modal-list">
+              <div v-for="opt in options" :key="'w-' + opt.id" class="spin-wheel__modal-row">
+                <span class="spin-wheel__modal-row-label" :style="{ color: opt.color }">{{ opt.label || '(空)' }}</span>
+                <input class="spin-wheel__modal-input" type="number" min="1"
+                  :value="opt.weight"
+                  @change="updateWeight(opt.id, ($event.target as HTMLInputElement).value)" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
   </div>
 </template>
 
@@ -219,7 +267,6 @@ function clearHistory() { history.value = [] }
 .spin-wheel__option-row { display: flex; align-items: center; gap: 8px; min-width: 0; }
 .spin-wheel__option-index { flex-shrink: 0; width: 24px; text-align: center; font-size: 12px; font-weight: 650; color: var(--text-muted); font-variant-numeric: tabular-nums; }
 
-/* 颜色圆点：点击循环切换 12 色 */
 .spin-wheel__color-badge {
   flex-shrink: 0; width: 28px; height: 28px; border-radius: var(--radius-sm);
   border: 2px solid var(--surface-border-strong); cursor: pointer;
@@ -247,19 +294,23 @@ function clearHistory() { history.value = [] }
 .spin-wheel__option-remove:hover:not(:disabled) { color: #ef4444; border-color: color-mix(in srgb, #ef4444 28%, var(--surface-border-strong)); background: color-mix(in srgb, #ef4444 8%, var(--surface-solid)); }
 .spin-wheel__option-remove:disabled { opacity: 0.4; cursor: not-allowed; }
 
-.spin-wheel__add-btn {
-  display: inline-flex; align-items: center; justify-content: center; align-self: flex-start;
+.spin-wheel__actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+.spin-wheel__add-btn, .spin-wheel__weight-btn {
+  display: inline-flex; align-items: center; justify-content: center;
   padding: 10px 16px; border-radius: var(--radius-full); font-size: 13px; font-weight: 550; letter-spacing: -0.01em;
   color: var(--text-primary); background: color-mix(in srgb, var(--bg-secondary) 70%, transparent);
   border: 1px solid var(--surface-border-strong); cursor: pointer;
   transition: transform var(--duration-press) var(--ease-out), background-color var(--duration-hover) var(--ease-hover), border-color var(--duration-hover) var(--ease-hover), box-shadow var(--duration-hover) var(--ease-hover);
 }
-.spin-wheel__add-btn:hover:not(:disabled) { background: color-mix(in srgb, var(--color-primary) 8%, var(--surface-solid)); border-color: color-mix(in srgb, var(--color-primary) 22%, var(--surface-border-strong)); }
+.spin-wheel__add-btn:hover:not(:disabled), .spin-wheel__weight-btn:hover { background: color-mix(in srgb, var(--color-primary) 8%, var(--surface-solid)); border-color: color-mix(in srgb, var(--color-primary) 22%, var(--surface-border-strong)); }
 .spin-wheel__add-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.spin-wheel__speak-toggle { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-secondary); user-select: none; cursor: pointer; width: fit-content; }
+.spin-wheel__speak-toggle input { width: 15px; height: 15px; accent-color: var(--color-primary); cursor: pointer; }
 
 .spin-wheel__ghost-btn { padding: 6px 12px; border-radius: var(--radius-full); font-size: 12px; font-weight: 550; color: var(--text-secondary); background: color-mix(in srgb, var(--bg-secondary) 70%, transparent); border: 1px solid var(--surface-border-strong); cursor: pointer; transition: transform var(--duration-press) var(--ease-out), background-color var(--duration-hover) var(--ease-hover), border-color var(--duration-hover) var(--ease-hover); }
 
-/* 转盘 */
 .spin-wheel__display {
   display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 24px 20px;
   border: 1px solid var(--surface-border-strong); border-radius: var(--radius-xl);
@@ -296,9 +347,40 @@ function clearHistory() { history.value = [] }
 }
 .spin-wheel__error { margin: 0; font-size: 13px; color: #ef4444; }
 
-.spin-wheel__speak-toggle {
-  display: inline-flex; align-items: center; gap: 8px;
-  font-size: 13px; color: var(--text-secondary); user-select: none; cursor: pointer; width: fit-content;
+/* ====== 权重弹窗 ====== */
+.spin-wheel__modal-overlay {
+  position: fixed; inset: 0; z-index: 10000;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(0,0,0,0.32); backdrop-filter: blur(8px) saturate(140%);
+  -webkit-backdrop-filter: blur(8px) saturate(140%);
+  padding: 24px;
 }
-.spin-wheel__speak-toggle input { width: 15px; height: 15px; accent-color: var(--color-primary); cursor: pointer; }
+.spin-wheel__modal {
+  width: 100%; max-width: 380px; max-height: 70vh; display: flex; flex-direction: column;
+  padding: 24px; border-radius: var(--radius-xl);
+}
+.spin-wheel__modal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.spin-wheel__modal-title { font-size: 17px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.02em; }
+.spin-wheel__modal-close { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-full); color: var(--text-secondary); border: 1px solid var(--surface-border-strong); transition: color var(--duration-hover) var(--ease-hover), background-color var(--duration-hover) var(--ease-hover); }
+.spin-wheel__modal-close svg { width: 14px; height: 14px; }
+.spin-wheel__modal-close:hover { color: var(--text-primary); background: color-mix(in srgb, var(--bg-tertiary) 60%, transparent); }
+.spin-wheel__modal-desc { font-size: 13px; color: var(--text-muted); margin: 0 0 16px; line-height: 1.5; }
+.spin-wheel__modal-list { display: flex; flex-direction: column; gap: 10px; overflow: auto; padding-right: 2px; }
+.spin-wheel__modal-row { display: flex; align-items: center; gap: 12px; }
+.spin-wheel__modal-row-label { flex: 1; font-size: 14px; font-weight: 550; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.spin-wheel__modal-input {
+  width: 72px; height: 40px; padding: 0 10px; text-align: center;
+  border: 1px solid var(--surface-border-strong); border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--bg-secondary) 70%, transparent); color: var(--text-primary);
+  font-size: 15px; font-variant-numeric: tabular-nums; outline: none; box-sizing: border-box;
+  transition: border-color var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast) var(--ease-out);
+}
+.spin-wheel__modal-input:focus { border-color: color-mix(in srgb, var(--color-primary) 48%, transparent); box-shadow: var(--ring); background: var(--bg-secondary); }
+.spin-wheel__modal-input::-webkit-inner-spin-button, .spin-wheel__modal-input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+
+.modal-enter-active { transition: opacity var(--duration-sheet) var(--ease-out); }
+.modal-leave-active { transition: opacity 180ms var(--ease-out); }
+.modal-enter-from, .modal-leave-to { opacity: 0; }
+.modal-enter-active .spin-wheel__modal { transition: transform var(--duration-sheet) var(--ease-out-spring); }
+.modal-enter-from .spin-wheel__modal { transform: translateY(12px) scale(0.96); }
 </style>
