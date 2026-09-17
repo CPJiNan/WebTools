@@ -102,6 +102,15 @@ export const tools: Tool[] = [
     component: () => import('./image/image-format/index.vue'),
   },
   {
+    id: 'image-rounded',
+    categoryId: 'image',
+    name: '图片圆角',
+    description: '为图片设置圆角。',
+    icon: 'image-rounded',
+    tags: ['圆角', 'PNG', 'WebP', 'JPG'],
+    component: () => import('./image/image-rounded/index.vue'),
+  },
+  {
     id: 'audio-format',
     categoryId: 'audio',
     name: '音频格式转换',

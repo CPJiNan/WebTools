@@ -637,10 +637,8 @@ onBeforeUnmount(() => {
             viewBox="0 0 24 24"
           >
             <path d="M0 0h24v24H0z" fill="none" stroke="none"/>
-            <path d="M12.5 21h-6.5a3 3 0 0 1 -3 -3v-10a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v5"/>
-            <path d="M10.5 10.5l5 2.5l-5 2.5z"/>
-            <path d="M19 22v-6"/>
-            <path d="M22 19l-3 -3l-3 3"/>
+            <path d="M2 8a4 4 0 0 1 4 -4h12a4 4 0 0 1 4 4v8a4 4 0 0 1 -4 4h-12a4 4 0 0 1 -4 -4v-8"/>
+            <path d="M10 9l5 3l-5 3l0 -6"/>
           </svg>
         </div>
         <div class="video-format__dropzone-text">

@@ -746,10 +746,9 @@ onBeforeUnmount(() => {
           >
             <path d="M0 0h24v24H0z" fill="none" stroke="none"/>
             <path d="M3 17a3 3 0 1 0 6 0a3 3 0 0 0 -6 0"/>
-            <path d="M9 17v-13h10v6"/>
+            <path d="M13 17a3 3 0 1 0 6 0a3 3 0 0 0 -6 0"/>
+            <path d="M9 17v-13h10v13"/>
             <path d="M9 8h10"/>
-            <path d="M19 22v-6"/>
-            <path d="M22 19l-3 -3l-3 3"/>
           </svg>
         </div>
         <div class="audio-format__dropzone-text">
