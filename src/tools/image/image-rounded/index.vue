@@ -52,7 +52,7 @@ const PX_MAX = 500
 const PERCENT_MAX = 100
 const DEFAULTS = {
   unit: 'px' as RadiusUnit,
-  corner: 24,
+  corner: 10,
   linked: true,
   scale: 100,
   format: 'png' as OutputFormat,
