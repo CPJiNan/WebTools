@@ -143,11 +143,9 @@ defineProps<Props>()
         >
           <path d="M0 0h24v24H0z" fill="none" stroke="none"/>
           <path d="M15 8h.01"/>
-          <path d="M12.5 21h-6.5a3 3 0 0 1 -3 -3v-12a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v6.5"/>
-          <path d="M3 16l5 -5c.928 -.893 2.072 -.893 3 0l3.5 3.5"/>
-          <path d="M14 14l1 -1c.679 -.653 1.473 -.829 2.208 -.526"/>
-          <path d="M19 22v-6"/>
-          <path d="M22 19l-3 -3l-3 3"/>
+          <path d="M3 6a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v12a3 3 0 0 1 -3 3h-12a3 3 0 0 1 -3 -3v-12"/>
+          <path d="M3 16l5 -5c.928 -.893 2.072 -.893 3 0l5 5"/>
+          <path d="M14 14l1 -1c.928 -.893 2.072 -.893 3 0l3 3"/>
         </svg>
         <svg
           v-else-if="tool.icon === 'audio-format'"
@@ -160,10 +158,9 @@ defineProps<Props>()
         >
           <path d="M0 0h24v24H0z" fill="none" stroke="none"/>
           <path d="M3 17a3 3 0 1 0 6 0a3 3 0 0 0 -6 0"/>
-          <path d="M9 17v-13h10v6"/>
+          <path d="M13 17a3 3 0 1 0 6 0a3 3 0 0 0 -6 0"/>
+          <path d="M9 17v-13h10v13"/>
           <path d="M9 8h10"/>
-          <path d="M19 22v-6"/>
-          <path d="M22 19l-3 -3l-3 3"/>
         </svg>
         <svg
           v-else-if="tool.icon === 'video-format'"
@@ -175,10 +172,8 @@ defineProps<Props>()
           viewBox="0 0 24 24"
         >
           <path d="M0 0h24v24H0z" fill="none" stroke="none"/>
-          <path d="M12.5 21h-6.5a3 3 0 0 1 -3 -3v-10a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v5"/>
-          <path d="M10.5 10.5l5 2.5l-5 2.5z"/>
-          <path d="M19 22v-6"/>
-          <path d="M22 19l-3 -3l-3 3"/>
+          <path d="M2 8a4 4 0 0 1 4 -4h12a4 4 0 0 1 4 4v8a4 4 0 0 1 -4 4h-12a4 4 0 0 1 -4 -4v-8"/>
+          <path d="M10 9l5 3l-5 3l0 -6"/>
         </svg>
         <svg
           v-else-if="tool.icon === 'unicode-converter'"
